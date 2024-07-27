@@ -1,0 +1,52 @@
+.gradient-background-to-white {
+    background: linear-gradient(to bottom, #F6FAFF, #FFFFFF);
+  }
+  
+  .gradient-background-to-blue {
+    background: linear-gradient(to bottom, #FFFFFF, #F6FAFF);
+  }
+  
+  .image-container {
+    position: relative;
+  }
+  
+  .image-container img {
+    transition: transform 0.3s ease;
+  }
+  
+  .image-container img:hover {
+    transform: scale(1.05);
+  }
+  
+  @media (max-width: 768px) {
+    .chakra-stack {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .chakra-input__group {
+      width: 100%;
+    }
+  
+    .chakra-hstack {
+      justify-content: center;
+    }
+  
+    .chakra-heading {
+      font-size: 1.5rem;
+    }
+  
+    .chakra-text {
+      font-size: 1rem;
+    }
+  
+    .image-container img {
+      box-size: 50px !important;
+    }
+  }
+
+  .topButton:hover{
+    text-decoration: none;
+    
+  }
+  
