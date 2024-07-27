@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, FormControl, FormLabel, Input, VStack, Heading } from '@chakra-ui/react';
+import { Box, Button, FormControl, FormLabel, Input, VStack } from '@chakra-ui/react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -33,8 +33,7 @@ const Login = () => {
   };
 
   return (
-    <Box w="md" mx="auto" mt="10" p={4} borderWidth={1} borderRadius="lg" boxShadow="lg">
-      <Heading as="h2" size="lg" textAlign="center" mb={6}>Login</Heading>
+    <Box w="md" mx="auto" mt="10">
       <form onSubmit={submitHandler}>
         <VStack spacing="4">
           <FormControl id="email" isRequired>

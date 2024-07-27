@@ -13,14 +13,15 @@ import ScheduleAppointment from './pages/ScheduleAppointment';
 import Payment from './pages/Payment';
 import ComplaintForm from './pages/ComplaintForm';
 import Footer from './components/Footer';
+import AuthForm from './pages/AuthForm';
 
 function App() {
   return (
     <ChakraProvider theme={theme}>
       <Router>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<AuthForm />} />
+          <Route path="/register" element={<AuthForm />} />
           <Route 
             path="*" 
             element={
