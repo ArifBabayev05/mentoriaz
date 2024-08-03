@@ -67,7 +67,7 @@ const AuthForm = () => {
       const data = await response.json();
       localStorage.setItem('userInfo', JSON.stringify(data));
       toast.success('Successfully registered!');
-      navigate('/dashboard');
+      navigate('/profile/' + data._id);
     } catch (error) {
       toast.error(`Error: ${error.message}`);
     }
@@ -93,7 +93,7 @@ const AuthForm = () => {
       const data = await response.json();
       localStorage.setItem('userInfo', JSON.stringify(data));
       toast.success('Successfully logged in!');
-      navigate('/dashboard');
+      navigate('/profile/' + data._id);
     } catch (error) {
       toast.error(`Error: ${error.message}`);
     }
@@ -138,8 +138,8 @@ const AuthForm = () => {
             </TabList>
             <TabPanels>
               <TabPanel>
-              <form onSubmit={(e) => submitRegisterHandler(e, mentorForm, false)}>
-              <VStack spacing={4} align="stretch">
+                <form onSubmit={(e) => submitRegisterHandler(e, userForm, false)}>
+                  <VStack spacing={4} align="stretch">
                     <Button
                       variant="outline"
                       colorScheme="red"
@@ -181,14 +181,6 @@ const AuthForm = () => {
                         onChange={(e) => handleChange('user', 'password', e.target.value)} />
                     </FormControl>
 
-                    {/* <FormControl id="user_isMentor" isRequired>
-                      <FormLabel>Mentorsunuz?</FormLabel>
-                      <Select value="no" isDisabled>
-                        <option value="no">Xeyr</option>
-                        <option value="yes">Bəli</option>
-                      </Select>
-                    </FormControl> */}
-
                     <Button type='submit' colorScheme="blue" width="full">
                       İstifadəçi kimi Qeydiyyatdan keçin
                     </Button>
@@ -196,7 +188,7 @@ const AuthForm = () => {
                 </form>
               </TabPanel>
               <TabPanel>
-              <form onSubmit={(e) => submitRegisterHandler(e, mentorForm, true)}>
+                <form onSubmit={(e) => submitRegisterHandler(e, mentorForm, true)}>
                   <VStack spacing={4} align="stretch">
                     <Button
                       variant="outline"
@@ -240,19 +232,11 @@ const AuthForm = () => {
                         onChange={(e) => handleChange('mentor', 'password', e.target.value)} />
                     </FormControl>
 
-                    {/* <FormControl id="mentor_isMentor" isRequired>
-                      <FormLabel>Register as Mentor?</FormLabel>
-                      <Select value="yes" isDisabled>
-                        <option value="no">Xeyr</option>
-                        <option value="yes">Bəli</option>
-                      </Select>
-                    </FormControl> */}
                     <Button type='submit' colorScheme="blue" width="full">
-                     Mentor kimi Qeydiyyatdan keçin
+                      Mentor kimi Qeydiyyatdan keçin
                     </Button>
                   </VStack>
                 </form>
-
               </TabPanel>
               <TabPanel>
                 <form onSubmit={submitLoginHandler}>
@@ -279,7 +263,6 @@ const AuthForm = () => {
                   </VStack>
                 </form>
               </TabPanel>
-
             </TabPanels>
           </Tabs>
         </VStack>

@@ -44,7 +44,7 @@ const signInWithGoogle = async (isMentor, navigate, toast) => {
     const data = await response.json();
     localStorage.setItem('userInfo', JSON.stringify(data));
     toast.success('Successfully logged in!');
-    navigate('/dashboard');
+    navigate('/profile/' + data._id);
   } catch (error) {
     toast.error(`Error: ${error.message}`);
   }

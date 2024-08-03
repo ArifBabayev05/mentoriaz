@@ -14,6 +14,7 @@ import Payment from './pages/Payment';
 import ComplaintForm from './pages/ComplaintForm';
 import Footer from './components/Footer';
 import AuthForm from './pages/AuthForm';
+import Header from './components/Header';
 
 function App() {
   return (
@@ -22,15 +23,16 @@ function App() {
         <Routes>
           <Route path="/login" element={<AuthForm />} />
           <Route path="/register" element={<AuthForm />} />
+          <Route path="/" element={<Home />} />
           <Route 
             path="*" 
             element={
               <>
+                <Header />
                 <Routes>
-                  <Route path="/" element={<Home />} />
                   <Route path="/dashboard" element={<Home />} />
                   <Route path="/profile/:userId" element={<Profile />} />
-                  <Route path="/edit-profile" element={<EditProfile />} />
+                  <Route path="/edit-profile/:userId" element={<EditProfile />} />
                   <Route path="/search-mentors" element={<SearchMentors />} />
                   <Route path="/schedule-appointment/:mentorId" element={<ScheduleAppointment />} />
                   <Route path="/complaint" element={<ComplaintForm />} />
