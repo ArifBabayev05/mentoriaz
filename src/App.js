@@ -15,6 +15,8 @@ import ComplaintForm from './pages/ComplaintForm';
 import Footer from './components/Footer';
 import AuthForm from './pages/AuthForm';
 import Header from './components/Header';
+import UserHomePage from './pages/UserHomePage';
+import MentorSearch from './pages/MentorSearch';
 
 function App() {
   return (
@@ -30,13 +32,16 @@ function App() {
               <>
                 <Header />
                 <Routes>
-                  <Route path="/dashboard" element={<Home />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/user-home-page" element={<UserHomePage />} />
+
                   <Route path="/profile/:userId" element={<Profile />} />
                   <Route path="/edit-profile/:userId" element={<EditProfile />} />
-                  <Route path="/search-mentors" element={<SearchMentors />} />
+                  {/* <Route path="/search-mentors" element={<SearchMentors />} /> */}
                   <Route path="/schedule-appointment/:mentorId" element={<ScheduleAppointment />} />
                   <Route path="/complaint" element={<ComplaintForm />} />
                   <Route path="/payment" element={<Payment />} />
+                  <Route path="/search-mentors" element={<MentorSearch />} />
                 </Routes>
                 <Footer />
               </>

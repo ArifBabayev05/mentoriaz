@@ -45,6 +45,8 @@ const EditProfile = () => {
         setIsMentor] = useState(false);
     const [inputValues,
         setInputValues] = useState({skills: '', interests: ''});
+    const [specialty,
+        setSpecialty] = useState('');
 
     const navigate = useNavigate();
 
@@ -68,6 +70,7 @@ const EditProfile = () => {
             setSkills(data.skills || []);
             setPassportPhoto(data.passportPhoto || '');
             setIsMentor(userInfo.isMentor || false);
+            setSpecialty(data.specialty || '');
         };
 
         fetchProfile();
@@ -106,7 +109,8 @@ const EditProfile = () => {
                 socialMedia,
                 interests,
                 skills,
-                passportPhoto
+                passportPhoto,
+                specialty
             })
         });
 
@@ -159,7 +163,7 @@ const EditProfile = () => {
 
     return (
         <Container maxW="container.lg" py={10}>
-           
+
             <Box
                 bg="white"
                 p={6}
@@ -172,15 +176,15 @@ const EditProfile = () => {
                 lg: '50%'
             }}
                 mx="auto">
-                   <HStack mb={10}>
-                <IconButton
-                    icon={< ArrowBackIcon />}
-                    onClick={handleBackToProfile}
-                    aria-label="Back to Profile"/>
-                <Heading as="h2" size="xl" textAlign="center">
-                    Məlumatları yeniləyin
-                </Heading>
-            </HStack>
+                <HStack mb={10}>
+                    <IconButton
+                        icon={< ArrowBackIcon />}
+                        onClick={handleBackToProfile}
+                        aria-label="Back to Profile"/>
+                    <Heading as="h2" size="xl" textAlign="center">
+                        Məlumatları yeniləyin
+                    </Heading>
+                </HStack>
                 <form onSubmit={submitHandler}>
                     <VStack spacing={4}>
                         <FormControl id="photo" mb={4}>
@@ -240,6 +244,14 @@ const EditProfile = () => {
                             </HStack>
                         </FormControl>
 
+                        <FormControl id="specialty">
+                            <FormLabel>Specialty</FormLabel>
+                            <Input
+                                type="text"
+                                value={specialty}
+                                onChange={(e) => setSpecialty(e.target.value)}/>
+                        </FormControl>
+                        
                         <FormControl id="description">
                             <FormLabel>Description</FormLabel>
                             <Textarea value={description} onChange={(e) => setDescription(e.target.value)}/>
@@ -339,7 +351,7 @@ const EditProfile = () => {
 
                         {isMentor && (
                             <FormControl id="passportPhoto">
-                                <FormLabel>Passport şəkli</FormLabel>   
+                                <FormLabel>Passport şəkli</FormLabel>
                                 <Button
                                     as="label"
                                     htmlFor="profile-photo-input"
