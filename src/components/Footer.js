@@ -10,7 +10,7 @@ const Footer = () => {
         <VStack align="start" spacing={4} flex="1" mb={{ base: 8, md: 0 }}>
           <HStack align="center">
             <Image src={images['mentor-main.png']} alt="Mentoriaz Logo" boxSize="50px" />
-            <Text fontSize="2xl" fontWeight="bold">Mentoriaz</Text>
+            <Text fontSize="1xl" fontWeight="bold">Mentoriaz</Text>
           </HStack>
           <Text fontSize="md" color="gray.600">Mentee is a unique mentoring platform where your goals become a reality</Text>
           <Button colorScheme="blue">Find a mentor →</Button>
@@ -32,7 +32,7 @@ const Footer = () => {
           <IconButton as={Link} href="#" icon={<InfoOutlineIcon />} isRound="true" size="lg" aria-label="Info" />
         </HStack>
       </Flex>
-      <Text fontSize="sm" color="gray.500" textAlign="center">© 2024 OOO «Mentee»</Text>
+      <Text fontSize="sm" color="gray.500" textAlign="center">© 2024 OOO «Mentoriaz»</Text>
       <HStack spacing={4} justify="center" mt={4}>
         <Link href="#" fontSize="sm" color="gray.500">Privacy Policy</Link>
         <Link href="#" fontSize="sm" color="gray.500">Offer</Link>

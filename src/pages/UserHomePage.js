@@ -21,7 +21,8 @@ import {
     InputGroup,
     InputRightElement,
     Input,
-    Divider
+    Divider,
+    useBreakpointValue
 } from '@chakra-ui/react';
 import {SearchIcon, BellIcon} from '@chakra-ui/icons';
 import {Link as RouterLink, useNavigate} from 'react-router-dom';
@@ -36,44 +37,38 @@ import {
 } from 'react-icons/fa';
 
 const MentorCard = ({mentor}) => {
-
     return (
-                <RouterLink to={"/profile/"+mentor.user._id}>
-        <Box bg="white" p={4} rounded="md" shadow="sm" textAlign="center">
-
-            <Avatar src={`http://localhost:5000${mentor.photo}`} alt={mentor.name} size="xl" mb={4}/>
-            <Heading as="h3" size="md" mb={2}>
-                {mentor.user.name}
-
-            </Heading>
-
-            <HStack spacing={2} mb={2} justifyContent="center">
-                {mentor.skills
-                    ?.map((skill) => (
-                        <Badge key={skill} colorScheme="blue">
-                            {skill}
-                        </Badge>
-                    ))}
-            </HStack>
-
-            <Text fontSize="sm" color="gray.600">
-                ⭐ {mentor.sessions}
-                sessions ({mentor.reviews}
-                reviews)
-            </Text>
-            {mentor.newMentor && (
-                <Text fontSize="sm" mt={2} color="gray.600">
-                    ⭐ New mentor
+        <RouterLink to={"/profile/"+mentor.user._id}>
+            <Box bg="white" p={4} rounded="md" shadow="sm" textAlign="center">
+                <Avatar src={`http://localhost:5000${mentor.photo}`} alt={mentor.name} size="xl" mb={4}/>
+                <Heading as="h3" size="md" mb={2}>
+                    {mentor.user.name}
+                </Heading>
+                <HStack spacing={2} mb={2} justifyContent="center">
+                    {mentor.skills
+                        ?.map((skill) => (
+                            <Badge key={skill} colorScheme="blue">
+                                {skill}
+                            </Badge>
+                        ))}
+                </HStack>
+                <Text fontSize="sm" color="gray.600">
+                    ⭐ {mentor.sessions}
+                    sessions ({mentor.reviews}
+                    reviews)
                 </Text>
-            )}
-        </Box>
-            </RouterLink>
+                {mentor.newMentor && (
+                    <Text fontSize="sm" mt={2} color="gray.600">
+                        ⭐ New mentor
+                    </Text>
+                )}
+            </Box>
+        </RouterLink>
     )
 };
 
 const Sidebar = () => {
-    const [profile,
-        setProfile] = useState(null);
+    const [profile, setProfile] = useState(null);
 
     useEffect(() => {
         const fetchProfile = async() => {
@@ -98,15 +93,11 @@ const Sidebar = () => {
                     size="md"/>
                 <VStack align="start" spacing={1}>
                     <Heading as="h2" size="sm">
-                        {profile
-                            ?.user
-                                ?.name}
+                        {profile?.user?.name}
                     </Heading>
                     <Link
                         as={RouterLink}
-                        to={`/profile/${profile
-                        ?.user
-                            ?._id}`}
+                        to={`/profile/${profile?.user?._id}`}
                         fontSize="sm"
                         color="gray.500">
                         Go to profile
@@ -118,25 +109,13 @@ const Sidebar = () => {
                 <Button as={RouterLink} to="/main" leftIcon={< FaHome />} variant="ghost">
                     Main
                 </Button>
-                <Button
-                    as={RouterLink}
-                    to="/message"
-                    leftIcon={< FaCommentDots />}
-                    variant="ghost">
+                <Button as={RouterLink} to="/message" leftIcon={< FaCommentDots />} variant="ghost">
                     Message
                 </Button>
-                <Button
-                    as={RouterLink}
-                    to="/meetings"
-                    leftIcon={< FaCalendarAlt />}
-                    variant="ghost">
+                <Button as={RouterLink} to="/meetings" leftIcon={< FaCalendarAlt />} variant="ghost">
                     My meetings
                 </Button>
-                <Button
-                    as={RouterLink}
-                    to="/achievements"
-                    leftIcon={< FaMedal />}
-                    variant="ghost">
+                <Button as={RouterLink} to="/achievements" leftIcon={< FaMedal />} variant="ghost">
                     Achievements
                 </Button>
                 <Button as={RouterLink} to="/favorites" leftIcon={< FaHeart />} variant="ghost">
@@ -163,8 +142,7 @@ const InfoCard = ({title, description, progress}) => (
 );
 
 const UserHomePage = () => {
-    const [mentors,
-        setMentors] = useState([]);
+    const [mentors, setMentors] = useState([]);
     const navigate = useNavigate();
 
     const handleEditProfile = () => {
@@ -177,7 +155,6 @@ const UserHomePage = () => {
                 const response = await fetch('http://localhost:5000/api/mentors/all');
                 const data = await response.json();
                 setMentors(data);
-
             } catch (error) {
                 console.error('Error fetching mentors:', error);
             }
@@ -186,14 +163,18 @@ const UserHomePage = () => {
         fetchMentors();
     }, []);
 
+    const showDesktopContent = useBreakpointValue({ base: false, lg: true });
+
     return (
         <Box>
             <Container maxW="8xl" mt={8}>
                 <Grid templateColumns="repeat(24, 1fr)" gap={6}>
-                    <GridItem colSpan={5}>
-                        <Sidebar/>
-                    </GridItem>
-                    <GridItem colSpan={13}>
+                    {showDesktopContent && (
+                        <GridItem colSpan={5}>
+                            <Sidebar/>
+                        </GridItem>
+                    )}
+                    <GridItem colSpan={showDesktopContent ? 13 : 24}>
                         <VStack spacing={8}>
                             <Box shadow="sm" bg="white" p={4} rounded="md" w="full">
                                 <Heading as="h3" size="lg">
@@ -203,34 +184,38 @@ const UserHomePage = () => {
                                     Get new matches
                                 </Button>
                             </Box>
-                            <VStack align="start" spacing={4} w="full">
-                                <Heading as="h3" size="lg">
-                                    Recommended mentors
-                                </Heading>
-                                <Grid templateColumns="repeat(3, 1fr)" gap={4} w="full">
-                                    {mentors.map((mentor) => (
-                                        <GridItem key={mentor._id}>
-                                            <MentorCard mentor={mentor}/>
-                                        </GridItem>
-                                    ))}
-                                </Grid>
+                          
+                                <VStack align="start" spacing={4} w="full">
+                                    <Heading as="h3" size="lg">
+                                        Recommended mentors
+                                    </Heading>
+                                    <Grid templateColumns="repeat(3, 1fr)" gap={4} w="full">
+                                        {mentors.map((mentor) => (
+                                            <GridItem key={mentor._id}>
+                                                <MentorCard mentor={mentor}/>
+                                            </GridItem>
+                                        ))}
+                                    </Grid>
+                                </VStack>
+                            
+                        </VStack>
+                    </GridItem>
+                    {showDesktopContent && (
+                        <GridItem colSpan={6}>
+                            <VStack spacing={4}>
+                                <InfoCard
+                                    title="Fill out your profile"
+                                    description="This will help mentors get to know you better"
+                                    progress={38}/>
+                                <InfoCard
+                                    title="Your meetings"
+                                    description="You don't have any booked meetings yet"/>
+                                <InfoCard
+                                    title="Achievements"
+                                    description="You don't have any achievements yet"/>
                             </VStack>
-                        </VStack>
-                    </GridItem>
-                    <GridItem colSpan={6}>
-                        <VStack spacing={4}>
-                            <InfoCard
-                                title="Fill out your profile"
-                                description="This will help mentors get to know you better"
-                                progress={38}/>
-                            <InfoCard
-                                title="Your meetings"
-                                description="You don't have any booked meetings yet"/>
-                            <InfoCard
-                                title="Achievements"
-                                description="You don't have any achievements yet"/>
-                        </VStack>
-                    </GridItem>
+                        </GridItem>
+                    )}
                 </Grid>
             </Container>
         </Box>

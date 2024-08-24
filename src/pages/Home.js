@@ -23,11 +23,11 @@ import {
 import {SearchIcon} from '@chakra-ui/icons';
 import {Link} from 'react-router-dom';
 import images from '../helpers/imageLoader';
+import goal from '../assets/images/goal.png'
 
 import '../style/Home.css';
 import FindMentorSection from '../components/FindMentorSection';
 import FAQSection from '../components/FAQSection';
-
 
 const Home = () => {
     return (
@@ -36,44 +36,41 @@ const Home = () => {
                 <Image src={images['mentor-main.png']} alt="Mentoriaz Logo" boxSize="50px"/>
                 <Spacer/>
                 <HStack spacing={8} alignItems="center">
-  <Box position="relative">
-    <Button
-      as={Link}
-      to="/mentor-tap"
-      variant="link"
-      fontWeight="bold"
-      color="darkBlue.500"
-      className="topButton"
-      _hover={{
-        textDecoration: 'none',  
-      }}
-    >
-      Mentor Tap
-    </Button>
-    <Box
-      position="absolute"
-      bottom="-2px"
-      left="0"
-      right="0"
-      height="2px"
-      bg="blue.500"
-      borderRadius="full"
-    />
-  </Box>
-  <Button
-    as={Link}
-    to="/mentor-ol"
-    variant="link"
-    fontWeight="bold"
-    color="darkBlue.500"
-    className="topButton"
-    _hover={{
-      textDecoration: 'none',  
-    }}
-  >
-    Mentor Ol
-  </Button>
-</HStack>
+                    <Box position="relative">
+                        <Button
+                            as={Link}
+                            to="/mentor-tap"
+                            variant="link"
+                            fontWeight="bold"
+                            color="darkBlue.500"
+                            className="topButton"
+                            _hover={{
+                            textDecoration: 'none'
+                        }}>
+                            Mentor Tap
+                        </Button>
+                        <Box
+                            position="absolute"
+                            bottom="-2px"
+                            left="0"
+                            right="0"
+                            height="2px"
+                            bg="blue.500"
+                            borderRadius="full"/>
+                    </Box>
+                    <Button
+                        as={Link}
+                        to="/mentor-ol"
+                        variant="link"
+                        fontWeight="bold"
+                        color="darkBlue.500"
+                        className="topButton"
+                        _hover={{
+                        textDecoration: 'none'
+                    }}>
+                        Mentor Ol
+                    </Button>
+                </HStack>
 
                 <Spacer/>
                 <Button as={Link} to="/login" colorScheme="blue">Daxil Ol</Button>
@@ -104,7 +101,7 @@ const Home = () => {
             </VStack>
             <Flex justifyContent="center" alignItems="center" mt={20} flexWrap="wrap">
                 <Box w="full" maxW="1200px">
-                <HStack spacing={8} mb={8} justify="center">
+                    <HStack spacing={8} mb={8} justify="center">
                         <Box className="image-container">
                             <Image src={images['a.png']} alt="User 1" boxSize="75px" borderRadius="full"/>
                         </Box>
@@ -187,73 +184,104 @@ const Home = () => {
                 </Box>
             </Flex>
             <Box mt={20} textAlign="center">
-                <Text fontSize="lg" color="gray.600">Who is it for</Text>
+                <Text fontSize="lg" color="gray.600">Kimlər üçündür?</Text>
                 <Heading as="h2" size="xl" mt={4} mb={6} fontWeight="bold">
-                    Build your career with a plan that works
+                    Uğur qazandıran planla karyeranı qur
                 </Heading>
                 <HStack spacing={4} justify="center" mb={10} flexWrap="wrap">
-                    <Button variant="outline" colorScheme="blue">Career guidance</Button>
-                    <Button variant="outline" colorScheme="blue">Starting in a new profession</Button>
-                    <Button variant="outline" colorScheme="blue">Changing careers</Button>
-                    <Button variant="outline" colorScheme="blue">Working abroad</Button>
-                    <Button variant="outline" colorScheme="blue">Mentorship for leaders</Button>
+                    <Button as={Link} to="/mentor-ol" bg="#4292fc"
+                        color="white" 
+                        border="none" 
+                        _hover={{
+                        bg: "#2381FF"
+                        
+                    }}
+                    >
+                        Karyera dəstəyi
+                    </Button>
+                    <Button as={Link} to="/mentor-ol" bg="#4292fc"
+                        color="white" 
+                        border="none" 
+                        _hover={{
+                        bg: "#2381FF"
+                        
+                    }}>Gələcəyini seç</Button>
+                    <Button as={Link} to="/mentor-ol" bg="#4292fc"
+                        color="white" 
+                        border="none" 
+                        _hover={{
+                        bg: "#2381FF"
+                        
+                    }}>Xaricdə işlə</Button>
+                    <Button as={Link} to="/mentor-ol" bg="#4292fc"
+                        color="white" 
+                        border="none" 
+                        _hover={{
+                        bg: "#2381FF"
+                        
+                    }}>Liderlər üçün mentorluq</Button>
+                    <Button as={Link} to="/mentor-ol" bg="#4292fc"
+                        color="white" 
+                        border="none" 
+                        _hover={{
+                        bg: "#2381FF"
+                        
+                    }}>Yeni karyeraya başla</Button>
+               
                 </HStack>
                 <Flex justifyContent="center" alignItems="center" spacing={8} flexWrap="wrap">
-                    <Box bg="white" p={6} rounded="md" shadow="md" maxW="sm" textAlign="left" m={4}>
-                        <Image src={images['a.png']} alt="Discover Yourself" boxSize="50px" mb={4}/>
-                        <Heading as="h3" size="md" mb={2}>Discover Yourself</Heading>
+                    <Box bg="white" p={6} rounded="md" shadow="sm" maxW="sm" textAlign="left" m={4}>
+                        <Image src={images['discover.svg']} objectFit="contain" alt="Discover Yourself" boxSize="300px"  textAlign="center" w="full" mb={4}/>
+                        <Heading as="h3" size="md" mb={2}>Potensialını kəşf et</Heading>
                         <Text fontSize="sm" color="gray.600">
-                            Evaluate your level and master what will help you advance in your profession.
+                        Səviyyənizi qiymətləndirin və peşənizdə irəliləməyinizə kömək edəcək bacarıqları inkişaf etdirin.
                         </Text>
                     </Box>
-                    <Box bg="white" p={6} rounded="md" shadow="md" maxW="sm" textAlign="left" m={4}>
-                        <Image src={images['a.png']} alt="Set Goals" boxSize="50px" mb={4}/>
-                        <Heading as="h3" size="md" mb={2}>Set Goals</Heading>
+                    <Box bg="white" p={6} rounded="md" shadow="sm" maxW="sm" textAlign="left" m={4}>
+                    <Image src={images['dsc2.jpeg']} objectFit="contain" alt="Discover Yourself" boxSize="300px" textAlign="center" w="full" mb={4}/>
+                    <Heading as="h3" size="md" mb={2}>Set Goals</Heading>
                         <Text fontSize="sm" color="gray.600">
-                            Create a long-term development plan and follow it step by step, without
-                            abandoning it halfway.
+                            Uzunmüddətli inkişaf planı yaradın və onu addım-addım izləyin, zənciri qırmadan.
                         </Text>
                     </Box>
-                    <Box bg="white" p={6} rounded="md" shadow="md" maxW="sm" textAlign="left" m={4}>
-                        <Image src={images['a.png']} alt="Navigate Your Path" boxSize="50px" mb={4}/>
-                        <Heading as="h3" size="md" mb={2}>Navigate Your Path</Heading>
+                    <Box bg="white" p={6} rounded="md" shadow="sm" maxW="sm" textAlign="left"  m={4}>
+                    <Image src={images['dsc.png']} objectFit="contain" alt="Discover Yourself" boxSize="300px" textAlign="center" w="full" mb={4}/>
+                    <Heading as="h3" size="md" mb={2}>Navigate Your Path</Heading>
                         <Text fontSize="sm" color="gray.600">
-                            Gain confidence and find your place in the IT community.
+                            Karyeranızda inam qazanın və sahəsində öz yerinizi tapın.
                         </Text>
                     </Box>
                 </Flex>
             </Box>
 
             <Box mt={20} textAlign="center">
-                <Text fontSize="lg" color="gray.600">How It Works</Text>
+                <Text fontSize="lg" color="gray.600">Mentoriaz necə çalışır?</Text>
                 <Heading as="h2" size="xl" mt={4} mb={6} fontWeight="bold">
-                    Engage with a mentor according to a proven plan
+                    Seçdiyiniz karyeranıza əsasən bir mentora müraciət edin
                 </Heading>
                 <HStack spacing={8} justify="center" mb={10} flexWrap="wrap">
                     {[
                         {
-                            image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=Mn' +
-                                    'wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80',
-                            title: 'Living room Sofa',
-                            description: 'This sofa is perfect for modern trinspired spaces, earthy' +
-                                    ' toned spacage d' +
-                                    'esign.'
+                            image: images['logo2.png'],
+                            title: 'Hədəfini seç',
+                            description: 'Məqsədini seçərək uyğun mentor tap və inkişafını planla.'
                         }, {
-                            image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=Mn' +
-                                    '=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1050&q=80',
-                            title: 'Modern Chair',
-                            description: 'A sleek modern chair that will fit perfectly in your minimalist home design.'
+                            image: images['logo3.png'],
+                            title: 'Mentorunu tap',
+                            description: 'Karyera inkişafını dəstəkləyəcək ideal mentorunu tap.'
                         }, {
-                            image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=Mn' +
-                                    '=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=934&q=80',
-                            title: 'Wooden Desk',
-                            description: 'A sturdy wooden desk that is perfect for both home offices and professional work' +
-                                    'spaces.'
+                            image: images['cal.png'],
+                            title: 'Görüş yarat',
+                            description: 'Mentorunla görüş təyin edərək inkişafını dəstəklə.'
+                        }, {
+                            image: images['cal2.png'],
+                            title: 'İnkişaf et',
+                            description: 'İnkişafına kömək edəcək güclü və dəstəkləyici resurslarla tanış ol.'
                         }
                     ].map((item, idx) => (
                         <Card maxW='sm' bg="background.500" border="none" shadow="none" key={idx}>
                             <CardBody>
-                                <Image src={item.image} alt={item.title} borderRadius='lg'/>
+                                <Image src={item.image} alt={item.title} borderRadius='lg' objectFit="contain" w="full" h="full" textAlign="center"/>
                                 <Stack mt='6' spacing='3'>
                                     <Heading size='md'>{item.title}</Heading>
                                     <Text>{item.description}</Text>

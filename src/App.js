@@ -17,6 +17,9 @@ import AuthForm from './pages/AuthForm';
 import Header from './components/Header';
 import UserHomePage from './pages/UserHomePage';
 import MentorSearch from './pages/MentorSearch';
+import AdminDashboard from './pages/AdminDashboard';
+import VideoMeetingPage from './pages/Meeting';
+import Meeting from './pages/Meeting';
 
 function App() {
   return (
@@ -32,7 +35,7 @@ function App() {
               <>
                 <Header />
                 <Routes>
-                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/admin-dashboard" element={<AdminDashboard />} />
                   <Route path="/user-home-page" element={<UserHomePage />} />
 
                   <Route path="/profile/:userId" element={<Profile />} />
@@ -42,6 +45,8 @@ function App() {
                   <Route path="/complaint" element={<ComplaintForm />} />
                   <Route path="/payment" element={<Payment />} />
                   <Route path="/search-mentors" element={<MentorSearch />} />
+
+                  <Route path="/:roomId" element={<Meeting />} />
                 </Routes>
                 <Footer />
               </>

@@ -1,0 +1,21 @@
+.custom-calendar .rmdp-container {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .custom-calendar .rmdp-day {
+    font-size: 1rem;
+    color: #333;
+    border: none;
+  }
+  
+  .custom-calendar .rmdp-day.rmdp-selected {
+    background: #E3E6EA;
+    border-radius: 50%;
+    color: white;
+  }
+  
+  .custom-calendar .rmdp-day.rmdp-disabled {
+    color: #ccc;
+  }
