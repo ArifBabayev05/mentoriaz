@@ -15,10 +15,13 @@ import {
 } from '@chakra-ui/react';
 import { Calendar } from "react-multi-date-picker";
 import { FaLinkedin, FaTwitter, FaGithub, FaClock, FaUserAlt } from 'react-icons/fa';
+import { useLoading } from '../helpers/loadingContext';
 
 import '../style/meeting.css';
 
 const ScheduleAppointment = () => {
+  const {setIsLoading} = useLoading();
+
   const { mentorId } = useParams();
   const [mentor, setMentor] = useState(null);
   const [date, setDate] = useState(null);
@@ -54,13 +57,12 @@ const ScheduleAppointment = () => {
       });
       return;
     }
+    setIsLoading(true);
 
-    // Combine the date and time into a single Date object
     const formattedDate = new Date(date.year, date.month.index, date.day);
     const [hours, minutes] = time.split(':');
     formattedDate.setHours(hours);
     formattedDate.setMinutes(minutes);
-
     const response = await fetch('http://localhost:5000/api/appointments', {
       method: 'POST',
       headers: {
@@ -75,6 +77,7 @@ const ScheduleAppointment = () => {
     });
 
     if (response.ok) {
+      setIsLoading(false);
       toast({
         title: 'Appointment scheduled.',
         description: "Your appointment has been scheduled successfully.",

@@ -26,6 +26,7 @@ import images from '../helpers/imageLoader';
 import { signInWithGoogle } from '../helpers/firebaseConfig';
 
 const AuthForm = () => {
+
   const [userForm, setUserForm] = useState({ name: '', surname: '', email: '', password: '' });
   const [mentorForm, setMentorForm] = useState({ name: '', surname: '', email: '', password: '' });
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });

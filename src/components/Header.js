@@ -25,6 +25,8 @@ const Header = () => {
         setProfile] = useState(null);
     const navigate = useNavigate();
 
+    
+
     useEffect(() => {
         const fetchProfile = async() => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -40,24 +42,39 @@ const Header = () => {
         localStorage.removeItem('userInfo');
         navigate('/login');
     };
+    const handleProfile = () => {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        navigate('/profile/'+userInfo._id);
+    };
 
     return (
         <Box bg="white" px={4} py={2} shadow="md">
             <Container maxW="9xl">
                 <Flex alignItems="center">
                     <Flex align="center">
-                        <Link style={{"display":"flex"}} to="/user-home-page">
+                        <Link
+                            style={{
+                            "display": "flex"
+                        }}
+                            to="/user-home-page">
                             <Image src={logo} alt="Mentoriaz Logo" boxSize="40px" mr={2}/>
-                            <Text fontSize="xl" style={{"display":"flex", "align-items":"center"}} fontWeight="bold" color="black.500">Mentoriaz</Text>
+                            <Text
+                                fontSize="xl"
+                                style={{
+                                "display": "flex",
+                                "align-items": "center"
+                            }}
+                                fontWeight="bold"
+                                color="black.500">Mentoriaz</Text>
                         </Link>
                     </Flex>
                     <Spacer/>
-                    <InputGroup maxW="400px" mx={4}>
-                        <InputRightElement
-                            pointerEvents="none"
-                            children={< SearchIcon color = "gray.500" />}/>
-                        <Input type="text" placeholder="Enter a skill or goal"/>
-                    </InputGroup>
+                    <Link to="/search-mentors">
+                        <Text mx={2}>Mentor Tap</Text>
+                    </Link>
+                    <Link  to="/complaint">
+                        <Text mx={2} >Əlaqə</Text>
+                    </Link>
                     <IconButton
                         aria-label="Notifications"
                         icon={< BellIcon />}
@@ -74,6 +91,8 @@ const Header = () => {
                                     : `https://cdn-icons-png.freepik.com/512/147/147142.png`}/>
                         </MenuButton>
                         <MenuList>
+                            <MenuItem onClick={handleProfile}>Profil</MenuItem>
+
                             <MenuItem onClick={handleLogout}>Log Out</MenuItem>
                         </MenuList>
                     </Menu>

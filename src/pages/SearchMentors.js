@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, FormControl, FormLabel, Input, VStack, List, ListItem, Text, HStack } from '@chakra-ui/react';
+import { useLoading } from '../helpers/loadingContext';
 
 const SearchMentors = () => {
   const [search, setSearch] = useState('');
   const [mentors, setMentors] = useState([]);
   const navigate = useNavigate();
+  const {setIsLoading} = useLoading();
 
   const searchMentors = async () => {
+    setIsLoading(true)
     const response = await fetch(`http://localhost:5000/api/mentors/search?search=${search}`);
     const data = await response.json();
     setMentors(data);
+
+    if(response.ok){
+      setIsLoading(false);
+    }
   };
+ 
 
   const handleSchedule = (mentorId) => {
     navigate(`/schedule-appointment/${mentorId}`);

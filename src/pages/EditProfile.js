@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Box,
     Button,
@@ -18,65 +18,60 @@ import {
     WrapItem,
     IconButton,
     Text,
-    Image
+    Image,
 } from '@chakra-ui/react';
-import {ArrowBackIcon} from '@chakra-ui/icons';
+import { ArrowBackIcon } from '@chakra-ui/icons';
+import { useLoading } from '../helpers/loadingContext';
 
 const EditProfile = () => {
-    const [photo,
-        setPhoto] = useState('');
-    const [bannerPhoto,
-        setBannerPhoto] = useState('');
-    const [description,
-        setDescription] = useState('');
-    const [experience,
-        setExperience] = useState('');
-    const [education,
-        setEducation] = useState('');
-    const [socialMedia,
-        setSocialMedia] = useState({instagram: '', facebook: '', linkedin: ''});
-    const [interests,
-        setInterests] = useState([]);
-    const [skills,
-        setSkills] = useState([]);
-    const [passportPhoto,
-        setPassportPhoto] = useState('');
-    const [isMentor,
-        setIsMentor] = useState(false);
-    const [inputValues,
-        setInputValues] = useState({skills: '', interests: ''});
-    const [specialty,
-        setSpecialty] = useState('');
+    const { setIsLoading } = useLoading();
+    const [photo, setPhoto] = useState('');
+    const [bannerPhoto, setBannerPhoto] = useState('');
+    const [description, setDescription] = useState('');
+    const [experience, setExperience] = useState('');
+    const [education, setEducation] = useState('');
+    const [socialMedia, setSocialMedia] = useState({ instagram: '', facebook: '', linkedin: '' });
+    const [interests, setInterests] = useState([]);
+    const [skills, setSkills] = useState([]);
+    const [isMentor, setIsMentor] = useState(false);
+    const [inputValues, setInputValues] = useState({ skills: '', interests: '' });
+    const [specialty, setSpecialty] = useState('');
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchProfile = async() => {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-            const response = await fetch(`http://localhost:5000/api/profile/${userInfo._id}`);
-            const data = await response.json();
+        const fetchProfile = async () => {
+            setIsLoading(true);
+            try {
+                const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+                const response = await fetch(`http://localhost:5000/api/profile/${userInfo._id}`);
+                const data = await response.json();
 
-            setPhoto(data.photo || '');
-            setBannerPhoto(data.bannerPhoto || '');
-            setDescription(data.description || '');
-            setExperience(data.experience || '');
-            setEducation(data.education || '');
-            setSocialMedia(data.socialMedia || {
-                instagram: '',
-                facebook: '',
-                linkedin: ''
-            });
-            setInterests(data.interests || []);
-            setSkills(data.skills || []);
-            setPassportPhoto(data.passportPhoto || '');
-            setIsMentor(userInfo.isMentor || false);
-            setSpecialty(data.specialty || '');
+                setPhoto(data.photo || '');
+                setBannerPhoto(data.bannerPhoto || '');
+                setDescription(data.description || '');
+                setExperience(data.experience || '');
+                setEducation(data.education || '');
+                setSocialMedia(data.socialMedia || {
+                    instagram: '',
+                    facebook: '',
+                    linkedin: ''
+                });
+                setInterests(data.interests || []);
+                setSkills(data.skills || []);
+                setIsMentor(userInfo.isMentor || false);
+                setSpecialty(data.specialty || '');
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+            } finally {
+                setIsLoading(false);
+            }
         };
 
         fetchProfile();
-    }, []);
+    }, [setIsLoading]);
 
-    const handleFileUpload = async(e, setState) => {
+    const handleFileUpload = async (e, setState) => {
         const file = e.target.files[0];
         const formData = new FormData();
         formData.append('file', file);
@@ -90,34 +85,39 @@ const EditProfile = () => {
         setState(data.filePath);
     };
 
-    const submitHandler = async(e) => {
+    const submitHandler = async (e) => {
         e.preventDefault();
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        setIsLoading(true);
+        try {
+            const response = await fetch('http://localhost:5000/api/profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userInfo._id,
+                    photo,
+                    bannerPhoto,
+                    description,
+                    experience,
+                    education,
+                    socialMedia,
+                    interests,
+                    skills,
+                    specialty
+                })
+            });
 
-        const response = await fetch('http://localhost:5000/api/profile', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                userId: userInfo._id,
-                photo,
-                bannerPhoto,
-                description,
-                experience,
-                education,
-                socialMedia,
-                interests,
-                skills,
-                passportPhoto,
-                specialty
-            })
-        });
-
-        if (response.ok) {
-            navigate(`/profile/${userInfo._id}`);
-        } else {
-            console.error('Error updating profile');
+            if (response.ok) {
+                navigate(`/profile/${userInfo._id}`);
+            } else {
+                console.error('Error updating profile');
+            }
+        } catch (error) {
+            console.error('Error submitting profile:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -163,24 +163,23 @@ const EditProfile = () => {
 
     return (
         <Container maxW="container.lg" py={10}>
-
             <Box
                 bg="white"
                 p={6}
                 rounded="lg"
                 shadow="lg"
                 maxW={{
-                base: '90%',
-                sm: '70%',
-                md: '60%',
-                lg: '50%'
-            }}
+                    base: '90%',
+                    sm: '70%',
+                    md: '60%',
+                    lg: '50%'
+                }}
                 mx="auto">
                 <HStack mb={10}>
                     <IconButton
-                        icon={< ArrowBackIcon />}
+                        icon={<ArrowBackIcon />}
                         onClick={handleBackToProfile}
-                        aria-label="Back to Profile"/>
+                        aria-label="Back to Profile" />
                     <Heading as="h2" size="xl" textAlign="center">
                         Məlumatları yeniləyin
                     </Heading>
@@ -193,7 +192,7 @@ const EditProfile = () => {
                                 type="file"
                                 display="none"
                                 onChange={(e) => handleFileUpload(e, setPhoto)}
-                                id="profile-photo-input"/>
+                                id="profile-photo-input" />
                             <HStack spacing={10}>
                                 <Button
                                     as="label"
@@ -211,7 +210,7 @@ const EditProfile = () => {
                                             alt="Banner Preview"
                                             boxSize="100px"
                                             objectFit="cover"
-                                            borderRadius="md"/>
+                                            borderRadius="md" />
                                     </Text>
                                 )}
                             </HStack>
@@ -223,7 +222,7 @@ const EditProfile = () => {
                                 type="file"
                                 display="none"
                                 onChange={(e) => handleFileUpload(e, setBannerPhoto)}
-                                id="banner-photo-input"/>
+                                id="banner-photo-input" />
                             <HStack spacing={10}>
                                 <Button
                                     as="label"
@@ -240,7 +239,7 @@ const EditProfile = () => {
                                     boxSize="100px"
                                     width="300px"
                                     objectFit="cover"
-                                    borderRadius="md"/>)}
+                                    borderRadius="md" />)}
                             </HStack>
                         </FormControl>
 
@@ -249,17 +248,17 @@ const EditProfile = () => {
                             <Input
                                 type="text"
                                 value={specialty}
-                                onChange={(e) => setSpecialty(e.target.value)}/>
+                                onChange={(e) => setSpecialty(e.target.value)} />
                         </FormControl>
-                        
+
                         <FormControl id="description">
                             <FormLabel>Description</FormLabel>
-                            <Textarea value={description} onChange={(e) => setDescription(e.target.value)}/>
+                            <Textarea value={description} onChange={(e) => setDescription(e.target.value)} />
                         </FormControl>
 
                         <FormControl id="experience">
                             <FormLabel>Experience</FormLabel>
-                            <Textarea value={experience} onChange={(e) => setExperience(e.target.value)}/>
+                            <Textarea value={experience} onChange={(e) => setExperience(e.target.value)} />
                         </FormControl>
 
                         <FormControl id="education">
@@ -267,7 +266,7 @@ const EditProfile = () => {
                             <Input
                                 type="text"
                                 value={education}
-                                onChange={(e) => setEducation(e.target.value)}/>
+                                onChange={(e) => setEducation(e.target.value)} />
                         </FormControl>
 
                         <FormControl id="instagram">
@@ -276,9 +275,9 @@ const EditProfile = () => {
                                 type="text"
                                 value={socialMedia.instagram}
                                 onChange={(e) => setSocialMedia({
-                                ...socialMedia,
-                                instagram: e.target.value
-                            })}/>
+                                    ...socialMedia,
+                                    instagram: e.target.value
+                                })} />
                         </FormControl>
 
                         <FormControl id="facebook">
@@ -287,9 +286,9 @@ const EditProfile = () => {
                                 type="text"
                                 value={socialMedia.facebook}
                                 onChange={(e) => setSocialMedia({
-                                ...socialMedia,
-                                facebook: e.target.value
-                            })}/>
+                                    ...socialMedia,
+                                    facebook: e.target.value
+                                })} />
                         </FormControl>
 
                         <FormControl id="linkedin">
@@ -298,28 +297,36 @@ const EditProfile = () => {
                                 type="text"
                                 value={socialMedia.linkedin}
                                 onChange={(e) => setSocialMedia({
-                                ...socialMedia,
-                                linkedin: e.target.value
-                            })}/>
+                                    ...socialMedia,
+                                    linkedin: e.target.value
+                                })} />
                         </FormControl>
 
                         <FormControl id="skills">
                             <FormLabel>Skills</FormLabel>
-                            <HStack>
+                            <HStack spacing={2}>
                                 <Input
                                     type="text"
                                     value={inputValues.skills}
-                                    onChange={(e) => handleInputChange('skills', e.target.value)}/>
-                                <Button onClick={() => handleAddItem('skills')} colorScheme="blue">
-                                    Add
+                                    onChange={(e) => handleInputChange('skills', e.target.value)} />
+                                <Button
+                                    colorScheme="blue"
+                                    onClick={() => handleAddItem('skills')}>
+                                    Add Skill
                                 </Button>
                             </HStack>
-                            <Wrap mt={4} mb={1} align="start">
+                            <Wrap mt={2}>
                                 {skills.map((skill, index) => (
                                     <WrapItem key={index}>
-                                        <Tag size="lg" colorScheme="blue" borderRadius="full">
+                                        <Tag
+                                            size="md"
+                                            borderRadius="full"
+                                            variant="solid"
+                                            color="white"
+                                            colorScheme="blue">
+                                            
                                             <TagLabel>{skill}</TagLabel>
-                                            <TagCloseButton onClick={() => handleRemoveItem('skills', skill)}/>
+                                            <TagCloseButton onClick={() => handleRemoveItem('skills', skill)} />
                                         </Tag>
                                     </WrapItem>
                                 ))}
@@ -328,54 +335,42 @@ const EditProfile = () => {
 
                         <FormControl id="interests">
                             <FormLabel>Interests</FormLabel>
-                            <HStack>
+                            <HStack spacing={2}>
                                 <Input
                                     type="text"
                                     value={inputValues.interests}
-                                    onChange={(e) => handleInputChange('interests', e.target.value)}/>
-                                <Button onClick={() => handleAddItem('interests')} colorScheme="blue">
-                                    Add
+                                    onChange={(e) => handleInputChange('interests', e.target.value)} />
+                                <Button
+                                    colorScheme="blue"
+                                    onClick={() => handleAddItem('interests')}>
+                                    Add Interest
                                 </Button>
                             </HStack>
-                            <Wrap mt={4} mb={1} align="start">
+                            <Wrap mt={2}>
                                 {interests.map((interest, index) => (
                                     <WrapItem key={index}>
-                                        <Tag size="lg" colorScheme="blue" borderRadius="full">
+                                        <Tag
+                                            size="md"
+                                            borderRadius="full"
+                                            variant="solid"
+                                            color="white"
+                                            colorScheme="green">
                                             <TagLabel>{interest}</TagLabel>
-                                            <TagCloseButton onClick={() => handleRemoveItem('interests', interest)}/>
+                                            <TagCloseButton onClick={() => handleRemoveItem('interests', interest)} />
                                         </Tag>
                                     </WrapItem>
                                 ))}
                             </Wrap>
                         </FormControl>
+                        
 
-                        {isMentor && (
-                            <FormControl id="passportPhoto">
-                                <FormLabel>Passport şəkli</FormLabel>
-                                <Button
-                                    as="label"
-                                    htmlFor="profile-photo-input"
-                                    colorScheme="blue"
-                                    variant="outline"
-                                    cursor="pointer">
-                                    Şəkil seçin
-                                </Button>
-                                {passportPhoto && (
-                                    <Text mt={2} color="gray.600">
-                                        <Image
-                                            mt={2}
-                                            src={"http://localhost:5000" + passportPhoto}
-                                            alt="PassportPhoto Preview"
-                                            boxSize="100px"
-                                            objectFit="cover"
-                                            borderRadius="md"/>
-                                    </Text>
-                                )}
-                            </FormControl>
-                        )}
-
-                        <Button type="submit" width="full" colorScheme="blue">
-                            Update Profile
+                        <Button
+                            type="submit"
+                            colorScheme="teal"
+                            size="lg"
+                            width="full"
+                            mt={6}>
+                            Məlumatları yeniləyin
                         </Button>
                     </VStack>
                 </form>

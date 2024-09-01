@@ -20,40 +20,53 @@ import MentorSearch from './pages/MentorSearch';
 import AdminDashboard from './pages/AdminDashboard';
 import VideoMeetingPage from './pages/Meeting';
 import Meeting from './pages/Meeting';
+import LoadingPage from './components/LoadingPage'; 
+import { LoadingProvider, useLoading } from './helpers/loadingContext'; 
+import VerifyProfile from './pages/VerifyProfile';
+const AppContent = () => {
+  const { isLoading } = useLoading();
+
+  return (
+    <>
+      {isLoading && <LoadingPage />}
+      <Routes>
+        <Route path="/login" element={<AuthForm />} />
+        <Route path="/register" element={<AuthForm />} />
+        <Route path="/" element={<Home />} />
+        <Route
+          path="*"
+          element={
+            <>
+              <Header />
+              <Routes>
+                <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                <Route path="/user-home-page" element={<UserHomePage />} />
+                <Route path="/profile/:userId" element={<Profile />} />
+                <Route path="/edit-profile/:userId" element={<EditProfile />} />
+                <Route path="/verify-profile/:userId" element={<VerifyProfile />} />
+                <Route path="/schedule-appointment/:mentorId" element={<ScheduleAppointment />} />
+                <Route path="/complaint" element={<ComplaintForm />} />
+                <Route path="/payment" element={<Payment />} />
+                <Route path="/search-mentors" element={<MentorSearch />} />
+                <Route path="/:roomId" element={<Meeting />} />
+              </Routes>
+              <Footer />
+            </>
+          }
+        />
+      </Routes>
+    </>
+  );
+};
 
 function App() {
   return (
     <ChakraProvider theme={theme}>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<AuthForm />} />
-          <Route path="/register" element={<AuthForm />} />
-          <Route path="/" element={<Home />} />
-          <Route 
-            path="*" 
-            element={
-              <>
-                <Header />
-                <Routes>
-                  <Route path="/admin-dashboard" element={<AdminDashboard />} />
-                  <Route path="/user-home-page" element={<UserHomePage />} />
-
-                  <Route path="/profile/:userId" element={<Profile />} />
-                  <Route path="/edit-profile/:userId" element={<EditProfile />} />
-                  {/* <Route path="/search-mentors" element={<SearchMentors />} /> */}
-                  <Route path="/schedule-appointment/:mentorId" element={<ScheduleAppointment />} />
-                  <Route path="/complaint" element={<ComplaintForm />} />
-                  <Route path="/payment" element={<Payment />} />
-                  <Route path="/search-mentors" element={<MentorSearch />} />
-
-                  <Route path="/:roomId" element={<Meeting />} />
-                </Routes>
-                <Footer />
-              </>
-            }
-          />
-        </Routes>
-      </Router>
+      <LoadingProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </LoadingProvider>
     </ChakraProvider>
   );
 }

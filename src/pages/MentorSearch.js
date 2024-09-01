@@ -18,6 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { useNavigate, Link } from 'react-router-dom';
 import { FaBookmark } from 'react-icons/fa';
+import { useLoading } from '../helpers/loadingContext';
 
 const MentorCard = ({ mentor, onSchedule }) => (
   <Box bg="white" w="full" p={6} rounded="lg" shadow="md" mb={4}>
@@ -72,17 +73,29 @@ const MentorSearch = () => {
   const [interests, setInterests] = useState('');
   const [skills, setSkills] = useState('');
   const navigate = useNavigate();
+  const { setIsLoading } = useLoading();
 
   useEffect(() => {
-    const fetchMentors = async () => {
-      const response = await fetch('http://localhost:5000/api/mentors/all');
-      const data = await response.json();
-      setMentors(data);
-      setFilteredMentors(data); // Initialize filtered mentors with all mentors
-    };
+    try{
+      setIsLoading(true);
+      const fetchMentors = async () => {
+        const response = await fetch('http://localhost:5000/api/mentors/all');
+        const data = await response.json();
+        setMentors(data);
+        setFilteredMentors(data); // Initialize filtered mentors with all mentors
+      };
+  
+      fetchMentors();
+    }
+    catch{}
+    finally{
+      setIsLoading(false);
 
-    fetchMentors();
+    }
+    
+
   }, []);
+
 
   const handleSchedule = (mentorId) => {
     navigate(`/schedule-appointment/${mentorId}`);

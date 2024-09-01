@@ -4,6 +4,7 @@ import AdminUsers from '../components/AdminUsers';
 import AdminProfiles from '../components/AdminProfiles';
 import AdminReviews from '../components/AdminReviews';
 import AdminAppointments from '../components/AdminAppointments';
+import VerifyProfileTab from '../components/AdminVerify';
 
 
 const AdminDashboard = () => {
@@ -16,6 +17,7 @@ const AdminDashboard = () => {
           <Tab>Profiles</Tab>
           <Tab>Reviews</Tab>
           <Tab>Appointments</Tab>
+          <Tab>Verify</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -29,6 +31,9 @@ const AdminDashboard = () => {
           </TabPanel>
           <TabPanel>
             <AdminAppointments />
+          </TabPanel>
+          <TabPanel>
+            <VerifyProfileTab />
           </TabPanel>
         </TabPanels>
       </Tabs>

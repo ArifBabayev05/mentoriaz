@@ -35,27 +35,25 @@ import {
     FaHeart,
     FaCalendarAlt
 } from 'react-icons/fa';
+import { useLoading } from '../helpers/loadingContext';
 
-const MentorCard = ({mentor}) => {
+const MentorCard = ({ mentor }) => {
     return (
-        <RouterLink to={"/profile/"+mentor.user._id}>
+        <RouterLink to={"/profile/" + mentor.user._id}>
             <Box bg="white" p={4} rounded="md" shadow="sm" textAlign="center">
-                <Avatar src={`http://localhost:5000${mentor.photo}`} alt={mentor.name} size="xl" mb={4}/>
+                <Avatar src={`http://localhost:5000${mentor.photo}`} alt={mentor.name} size="xl" mb={4} />
                 <Heading as="h3" size="md" mb={2}>
                     {mentor.user.name}
                 </Heading>
                 <HStack spacing={2} mb={2} justifyContent="center">
-                    {mentor.skills
-                        ?.map((skill) => (
-                            <Badge key={skill} colorScheme="blue">
-                                {skill}
-                            </Badge>
-                        ))}
+                    {mentor.skills?.map((skill) => (
+                        <Badge key={skill} colorScheme="blue">
+                            {skill}
+                        </Badge>
+                    ))}
                 </HStack>
                 <Text fontSize="sm" color="gray.600">
-                    ⭐ {mentor.sessions}
-                    sessions ({mentor.reviews}
-                    reviews)
+                    ⭐ {mentor.sessions} sessions ({mentor.reviews} reviews)
                 </Text>
                 {mentor.newMentor && (
                     <Text fontSize="sm" mt={2} color="gray.600">
@@ -64,33 +62,40 @@ const MentorCard = ({mentor}) => {
                 )}
             </Box>
         </RouterLink>
-    )
+    );
 };
 
+// Sidebar Component
 const Sidebar = () => {
     const [profile, setProfile] = useState(null);
+    const { setIsLoading } = useLoading();
 
     useEffect(() => {
-        const fetchProfile = async() => {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-            const response = await fetch(`http://localhost:5000/api/profile/${userInfo._id}`);
-            const data = await response.json();
-            setProfile(data);
+        const fetchProfile = async () => {
+            try {
+                setIsLoading(true);
+                const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+                const response = await fetch(`http://localhost:5000/api/profile/${userInfo._id}`);
+                const data = await response.json();
+                setProfile(data);
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+            } finally {
+                setIsLoading(false);
+            }
         };
 
         fetchProfile();
-    }, []);
+    }, [setIsLoading]);
 
     return (
         <VStack align="start" spacing={4} p={4} rounded="md" w="full">
             <HStack spacing={4}>
                 <Avatar
-                    src={profile
-                    ?.photo
-                        ? `http://localhost:5000${profile.photo}`
-                        : `https://cdn-icons-png.freepik.com/512/147/147142.png`}
+                    src={profile?.photo ? `http://localhost:5000${profile.photo}` : `https://cdn-icons-png.freepik.com/512/147/147142.png`}
                     name="pp"
-                    size="md"/>
+                    size="md"
+                />
                 <VStack align="start" spacing={1}>
                     <Heading as="h2" size="sm">
                         {profile?.user?.name}
@@ -99,35 +104,37 @@ const Sidebar = () => {
                         as={RouterLink}
                         to={`/profile/${profile?.user?._id}`}
                         fontSize="sm"
-                        color="gray.500">
+                        color="gray.500"
+                    >
                         Go to profile
                     </Link>
                 </VStack>
             </HStack>
-            <Divider/>
+            <Divider />
             <VStack align="start" spacing={2}>
-                <Button as={RouterLink} to="/main" leftIcon={< FaHome />} variant="ghost">
+                <Button as={RouterLink} to="/main" leftIcon={<FaHome />} variant="ghost">
                     Main
                 </Button>
-                <Button as={RouterLink} to="/message" leftIcon={< FaCommentDots />} variant="ghost">
+                <Button as={RouterLink} to="/message" leftIcon={<FaCommentDots />} variant="ghost">
                     Message
                 </Button>
-                <Button as={RouterLink} to="/meetings" leftIcon={< FaCalendarAlt />} variant="ghost">
+                <Button as={RouterLink} to="/meetings" leftIcon={<FaCalendarAlt />} variant="ghost">
                     My meetings
                 </Button>
-                <Button as={RouterLink} to="/achievements" leftIcon={< FaMedal />} variant="ghost">
+                <Button as={RouterLink} to="/achievements" leftIcon={<FaMedal />} variant="ghost">
                     Achievements
                 </Button>
-                <Button as={RouterLink} to="/favorites" leftIcon={< FaHeart />} variant="ghost">
+                <Button as={RouterLink} to="/favorites" leftIcon={<FaHeart />} variant="ghost">
                     Favorite
                 </Button>
-                <Button as={RouterLink} to="/blog" leftIcon={< FaBlog />} variant="ghost">
+                <Button as={RouterLink} to="/blog" leftIcon={<FaBlog />} variant="ghost">
                     Blog
                 </Button>
             </VStack>
         </VStack>
-    )
+    );
 };
+
 
 const InfoCard = ({title, description, progress}) => (
     <Box p={4} rounded="md" shadow="sm" bg="white" w="full">
@@ -144,24 +151,28 @@ const InfoCard = ({title, description, progress}) => (
 const UserHomePage = () => {
     const [mentors, setMentors] = useState([]);
     const navigate = useNavigate();
+    const { setIsLoading } = useLoading(); // Use the loading context
 
     const handleEditProfile = () => {
         navigate(`/search-mentors`);
     };
 
     useEffect(() => {
-        const fetchMentors = async() => {
+        const fetchMentors = async () => {
             try {
+                setIsLoading(true); // Start loading
                 const response = await fetch('http://localhost:5000/api/mentors/all');
                 const data = await response.json();
                 setMentors(data);
             } catch (error) {
                 console.error('Error fetching mentors:', error);
+            } finally {
+                setIsLoading(false); // Stop loading
             }
         };
 
         fetchMentors();
-    }, []);
+    }, [setIsLoading]);
 
     const showDesktopContent = useBreakpointValue({ base: false, lg: true });
 
@@ -171,7 +182,7 @@ const UserHomePage = () => {
                 <Grid templateColumns="repeat(24, 1fr)" gap={6}>
                     {showDesktopContent && (
                         <GridItem colSpan={5}>
-                            <Sidebar/>
+                            <Sidebar />
                         </GridItem>
                     )}
                     <GridItem colSpan={showDesktopContent ? 13 : 24}>
@@ -184,20 +195,19 @@ const UserHomePage = () => {
                                     Get new matches
                                 </Button>
                             </Box>
-                          
-                                <VStack align="start" spacing={4} w="full">
-                                    <Heading as="h3" size="lg">
-                                        Recommended mentors
-                                    </Heading>
-                                    <Grid templateColumns="repeat(3, 1fr)" gap={4} w="full">
-                                        {mentors.map((mentor) => (
-                                            <GridItem key={mentor._id}>
-                                                <MentorCard mentor={mentor}/>
-                                            </GridItem>
-                                        ))}
-                                    </Grid>
-                                </VStack>
-                            
+
+                            <VStack align="start" spacing={4} w="full">
+                                <Heading as="h3" size="lg">
+                                    Recommended mentors
+                                </Heading>
+                                <Grid templateColumns="repeat(3, 1fr)" gap={4} w="full">
+                                    {mentors.map((mentor) => (
+                                        <GridItem key={mentor._id}>
+                                            <MentorCard mentor={mentor} />
+                                        </GridItem>
+                                    ))}
+                                </Grid>
+                            </VStack>
                         </VStack>
                     </GridItem>
                     {showDesktopContent && (
@@ -206,13 +216,13 @@ const UserHomePage = () => {
                                 <InfoCard
                                     title="Fill out your profile"
                                     description="This will help mentors get to know you better"
-                                    progress={38}/>
+                                    progress={38} />
                                 <InfoCard
                                     title="Your meetings"
-                                    description="You don't have any booked meetings yet"/>
+                                    description="You don't have any booked meetings yet" />
                                 <InfoCard
                                     title="Achievements"
-                                    description="You don't have any achievements yet"/>
+                                    description="You don't have any achievements yet" />
                             </VStack>
                         </GridItem>
                     )}

@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, FormControl, FormLabel, Input, Textarea, VStack } from '@chakra-ui/react';
+import { useLoading } from '../helpers/loadingContext';
 
 const ComplaintForm = () => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const { setIsLoading } = useLoading();
 
   const submitHandler = async (e) => {
     e.preventDefault();
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-
+    setIsLoading(true);
     const response = await fetch('http://localhost:5000/api/complaints', {
       method: 'POST',
       headers: {
@@ -20,6 +22,8 @@ const ComplaintForm = () => {
 
     if (response.ok) {
       navigate('/dashboard');
+      setIsLoading(false);
+
     } else {
       console.error('Error submitting complaint');
     }
