@@ -63,6 +63,7 @@ const VerifyProfile = () => {
         e.preventDefault();
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
         setIsLoading(true);
+
         try {
             const response = await fetch('http://localhost:5000/api/profile', {
                 method: 'POST',

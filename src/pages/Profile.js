@@ -10,18 +10,19 @@ import {
     Text,
     Button,
     Divider,
+    Badge,
     Tabs,
     TabList,
     TabPanels,
     Tab,
     TabPanel,
+    SimpleGrid,
     Progress,
     Tag,
     Icon,
     Image,
     useDisclosure,
     Flex,
-
     Modal,
     ModalOverlay,
     ModalContent,
@@ -32,18 +33,23 @@ import {
     Input,
     Textarea,
     NumberInput,
+    useToast,
     NumberInputField
 } from '@chakra-ui/react';
 import {useParams, useNavigate, Link} from 'react-router-dom';
-import {EditIcon, CheckCircleIcon} from '@chakra-ui/icons';
+import {EditIcon, InfoIcon } from '@chakra-ui/icons';
 import StarRating from '../components/StarRating';
 import MyReviews from '../components/MyReviews';
 import MyMentors from '../components/MyMentors';
 import {useLoading} from '../helpers/loadingContext';
 import images from '../helpers/imageLoader';
 import Header from '../components/Header';
+import EditCardModal from '../components/EditCardModal';
 
 const Profile = ({currentUserId}) => {
+    const toast = useToast();
+    const [showBadgeMessage, setShowBadgeMessage] = useState(false);
+
     const {setIsLoading} = useLoading();
     const {userId} = useParams();
     const [profile,
@@ -62,6 +68,7 @@ const Profile = ({currentUserId}) => {
         setFilterRating] = useState(0);
 
     const {isOpen, onOpen, onClose} = useDisclosure();
+    const { isEditOpen, onEditOpen, onEditClose, onUpdate } = useDisclosure();
 
     const [cards, setCards] = useState([]);
     const [newCard, setNewCard] = useState({ name: '', description: '', price: '', time: '' });
@@ -117,6 +124,60 @@ const Profile = ({currentUserId}) => {
         return null;
     }
 
+    const handleShowBadgeMessage = () => {
+        setShowBadgeMessage(true);
+        toast({
+           
+            title: 'Ən çox 4 paket əlavə edilə bilər',
+            status: 'info',
+            duration: 5000,
+            color:"white",
+            render: () => (
+                <div style={{
+                    background: "#2388FF",
+                    color: 'white',
+                    padding: '8px',
+                    borderRadius: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    fontWeight: 'bolder'
+                }}>
+                    <Icon as={InfoIcon} color="white" marginRight="8px" />
+                    Ən çox 4 paket əlavə edilə bilər
+                </div>
+            ),
+            isClosable: true
+        });
+    };
+    
+
+    const handleDeleteCard = async (id) => {
+        const response = await fetch(`http://localhost:5000/api/user/card/${id}`, {
+          method: 'DELETE',
+        });
+    
+        if (response.ok) {
+          toast({ title: 'Profile deleted.', status: 'success', duration: 5000, isClosable: true });
+        } else {
+          toast({ title: 'Error deleting profile.', status: 'error', duration: 5000, isClosable: true });
+        }
+      };
+      const handleUpdateCard = async (id, updatedCard) => {
+        const response = await fetch(`http://localhost:5000/api/admin/profiles/card/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedCard),
+        });
+      
+        if (response.ok) {
+          toast({ title: 'Card updated.', status: 'success', duration: 5000, isClosable: true });
+        } else {
+          toast({ title: 'Error updating card.', status: 'error', duration: 5000, isClosable: true });
+        }
+      };
     const handleAddCard = async () => {
         if (Object.values(newCard).some(value => !value.trim())) {
             alert('Please fill all fields.');
@@ -165,10 +226,16 @@ const Profile = ({currentUserId}) => {
         }));
     };
 
+const handleCreatemeeting = () => {
+    navigate(`/schedule-appointment/${userId}`);
+};
+const handleVerifyProfile = () => { 
+    navigate(`/verify-profile/${userId}`);
+};
     const handleEditProfile = () => {
         navigate(`/edit-profile/${userId}`);
     };
-
+    
     const handleAddReview = async() => {
         if (newReview.trim() === '' || rating === 0) 
             return;
@@ -207,7 +274,9 @@ const Profile = ({currentUserId}) => {
             setIsLoading(false);
         }
     };
-
+    const handleSave = (updatedCard) => {
+        onUpdate(profile.card._id, updatedCard);
+      };
     const handleDeleteReview = async(reviewId) => {
         try {
             setIsLoading(true);
@@ -231,7 +300,7 @@ const Profile = ({currentUserId}) => {
         }
     };
 
-    
+    const isMaxCards = profile.cards.length >= 4;
 
     
     const showMoreReviews = () => {
@@ -285,7 +354,9 @@ const Profile = ({currentUserId}) => {
                             </Flex>
                         </Heading>
                         <Text fontSize="lg">{profile.profession}</Text>
-                        <Text color="gray.500">Passport not verified</Text>
+                        {profile.isVerificated != '1' && (<Text color="gray.500">Passport not verified</Text>)}
+
+                        
                         <HStack spacing={4} mt={2}>
                             {profile.socialMedia
                                 ?.linkedin && (
@@ -308,6 +379,18 @@ const Profile = ({currentUserId}) => {
                         </HStack>
                     </VStack>
                     {isCurrentUser && (
+                        <>
+                        <Button
+                            leftIcon={< EditIcon />}
+                            onClick={handleVerifyProfile}
+                            colorScheme="blue"
+                            variant="outline"
+                            mt={4}
+                            alignSelf={{
+                            md: 'flex-start'
+                        }}>
+                            Profili təsdiqlə
+                        </Button>
                         <Button
                             leftIcon={< EditIcon />}
                             onClick={handleEditProfile}
@@ -318,8 +401,26 @@ const Profile = ({currentUserId}) => {
                             base: 'center',
                             md: 'flex-start'
                         }}>
-                            Edit profile
+                            Məlumatları dəyiş
                         </Button>
+                        </>
+                    )}
+
+
+                    {!isCurrentUser && (
+                    
+                        <Button
+                            leftIcon={< EditIcon />}
+                            onClick={handleCreatemeeting}
+                            colorScheme="blue"
+                            variant="outline"
+                            mt={4}
+                            alignSelf={{
+                            md: 'flex-start'
+                        }}>
+                            Görüşmə yarat
+                        </Button>
+                       
                     )}
                 </Stack>
                 <Stack
@@ -411,10 +512,18 @@ const Profile = ({currentUserId}) => {
                                 <Box w="100%" mx="auto">
     {isCurrentUser && (
         <>
-            <Button onClick={onOpen}>Paket Əlavə et</Button>
+        
+            {isMaxCards ? (
+                 <Button colorScheme="gray" mb={2} onClick={handleShowBadgeMessage}>Paket Əlavə et</Button>
+
+                    )
+                :
+                <Button colorScheme="blue" mb={2} onClick={onOpen}>Paket Əlavə et</Button>
+
+                }
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
-                <ModalContent>
+                <ModalContent bg="white">
                     <ModalHeader>Yeni Paket Əlavə et</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
@@ -447,6 +556,7 @@ const Profile = ({currentUserId}) => {
                                 value={newCard.time}
                                 onChange={handleCardInputChange}
                             />
+
                         </VStack>
                     </ModalBody>
                     <ModalFooter>
@@ -475,14 +585,36 @@ const Profile = ({currentUserId}) => {
                     </Box>
                 </>
             ) : (
-                profile.cards.map((card, index) => (
-                    <Box key={index} borderWidth={1} borderRadius="lg" p={4} mb={4}>
-                        <Heading size="md">{card.name}</Heading>
-                        <Text>{card.description}</Text>
-                        <Text>Price: {card.price}</Text>
-                        <Text>Time: {card.time}</Text>
-                    </Box>
-                ))
+                <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={4}>
+                {profile.cards.map((card, index) => (                    <Box
+                    key={index}
+                    borderWidth={1}
+                    borderRadius="lg"
+                    p={4}
+                    boxShadow="lg"
+                    transition="transform 0.2s"
+                    _hover={{ transform: "scale(1.05)" }}
+                >
+                    <Heading size="md" mb={2}>{card.name}</Heading>
+                    <Text mb={1}>{card.description}</Text>
+                    <Text fontWeight="bold" color="teal.500">Price: {card.price}</Text>
+                    <Text color="gray.500">Time: {card.time}</Text>
+
+                    {isCurrentUser && (
+                        <>
+                <Button 
+                    mt={4} 
+                    colorScheme="red" 
+                    onClick={() => handleDeleteCard(card._id)}
+                >
+                    Delete
+                </Button>
+                </>
+                
+            )}
+                </Box>
+                ))}
+            </SimpleGrid>
             )}
 </Box>
                                 </TabPanel>
