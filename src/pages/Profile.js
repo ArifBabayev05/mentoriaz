@@ -45,6 +45,7 @@ import {useLoading} from '../helpers/loadingContext';
 import images from '../helpers/imageLoader';
 import Header from '../components/Header';
 import EditCardModal from '../components/EditCardModal';
+import MentorAppointments from '../components/MentorAppointments';
 
 const Profile = ({currentUserId}) => {
     const toast = useToast();
@@ -441,6 +442,9 @@ const handleVerifyProfile = () => {
                                 {profile.isMentor
                                     ? <Tab>Paketlər</Tab>
                                     : null}
+                                {profile.isMentor && isCurrentUser
+                                    ? <Tab>Görüş istəkləri</Tab>
+                                    : null}
                             </TabList>
                             <TabPanels>
                                 <TabPanel>
@@ -510,113 +514,116 @@ const handleVerifyProfile = () => {
                                 </TabPanel>
                                 <TabPanel>
                                 <Box w="100%" mx="auto">
-    {isCurrentUser && (
-        <>
-        
-            {isMaxCards ? (
-                 <Button colorScheme="gray" mb={2} onClick={handleShowBadgeMessage}>Paket Əlavə et</Button>
-
-                    )
-                :
-                <Button colorScheme="blue" mb={2} onClick={onOpen}>Paket Əlavə et</Button>
-
-                }
-            <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent bg="white">
-                    <ModalHeader>Yeni Paket Əlavə et</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        <VStack spacing={4}>
-                            <Input 
-                                placeholder="Paket adı"
-                                name="name"
-                                value={newCard.name}
-                                onChange={handleCardInputChange}
-                            />
-                            <Textarea 
-                                placeholder="Paket təsviri"
-                                name="description"
-                                value={newCard.description}
-                                onChange={handleCardInputChange}
-                            />
-                            <NumberInput 
-                                placeholder="Qiymət"
-                                name="price"
-                                value={newCard.price}
-                                onChange={handleNumberInputChange}
-                                precision={2}
-                                step={0.01}
-                            >
-                                <NumberInputField />
-                            </NumberInput>
-                            <Input 
-                                placeholder="Zaman"
-                                name="time"
-                                value={newCard.time}
-                                onChange={handleCardInputChange}
-                            />
-
-                        </VStack>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button colorScheme="blue" mr={3} onClick={handleAddCard}>
-                            Əlavə et
-                        </Button>
-                        <Button variant="ghost" onClick={onClose}>Bağla</Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-        </>
-    )}
-    {profile.cards.length === 0 ? (
-                <>
-                    <Heading textAlign="center" size="lg">
-                        Hələki Mentor heçbir paket əlavə etməyib
-                    </Heading>
-                    <Box
-                        mx="auto"
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Image w="30%" src={images['nf.png']} />
-                    </Box>
-                </>
-            ) : (
-                <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={4}>
-                {profile.cards.map((card, index) => (                    <Box
-                    key={index}
-                    borderWidth={1}
-                    borderRadius="lg"
-                    p={4}
-                    boxShadow="lg"
-                    transition="transform 0.2s"
-                    _hover={{ transform: "scale(1.05)" }}
-                >
-                    <Heading size="md" mb={2}>{card.name}</Heading>
-                    <Text mb={1}>{card.description}</Text>
-                    <Text fontWeight="bold" color="teal.500">Price: {card.price}</Text>
-                    <Text color="gray.500">Time: {card.time}</Text>
-
-                    {isCurrentUser && (
+                        {isCurrentUser && (
                         <>
-                <Button 
-                    mt={4} 
-                    colorScheme="red" 
-                    onClick={() => handleDeleteCard(card._id)}
-                >
-                    Delete
-                </Button>
-                </>
+        
+                        {isMaxCards ? (
+                            <Button colorScheme="gray" mb={2} onClick={handleShowBadgeMessage}>Paket Əlavə et</Button>
+                        )
+                        :
+                        <Button colorScheme="blue" mb={2} onClick={onOpen}>Paket Əlavə et</Button>}
+                        <Modal isOpen={isOpen} onClose={onClose}>
+                            <ModalOverlay />
+                            <ModalContent bg="white">
+                            <ModalHeader>Yeni Paket Əlavə et</ModalHeader>
+                            <ModalCloseButton />
+                            <ModalBody>
+                                <VStack spacing={4}>
+                                    <Input 
+                                    placeholder="Paket adı"
+                                    name="name"
+                                    value={newCard.name}
+                                    onChange={handleCardInputChange}
+                                    />
+                                    <Textarea 
+                                    placeholder="Paket təsviri"
+                                    name="description"
+                                    value={newCard.description}
+                                    onChange={handleCardInputChange}
+                                    />
+                                    <NumberInput 
+                                    placeholder="Qiymət"
+                                    name="price"
+                                    value={newCard.price}
+                                    onChange={handleNumberInputChange}
+                                    precision={2}
+                                    step={0.01}
+                                    >
+                                        <NumberInputField />
+                                    </NumberInput>
+                                    <Input 
+                                    placeholder="Zaman"
+                                    name="time"
+                                    value={newCard.time}
+                                    onChange={handleCardInputChange}
+                                    />
+                                </VStack>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button colorScheme="blue" mr={3} onClick={handleAddCard}>
+                                    Əlavə et
+                                </Button>
+                                <Button variant="ghost" onClick={onClose}>Bağla</Button>
+                            </ModalFooter>
+                            </ModalContent>
+                        </Modal>
+                    </>
+                    )}
+                    {profile.cards.length === 0 ? (
+                        <>
+                            <Heading textAlign="center" size="lg">
+                                Hələki Mentor heçbir paket əlavə etməyib
+                            </Heading>
+                            <Box
+                                mx="auto"
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <Image w="30%" src={images['nf.png']} />
+                            </Box>
+                        </>
+                    ) : (
+                        <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={4}>
+                        {profile.cards.map((card, index) => (                    
+                            <Box
+                            key={index}
+                            borderWidth={1}
+                            borderRadius="lg"
+                            p={4}
+                            boxShadow="lg"
+                            transition="transform 0.2s"
+                            _hover={{ transform: "scale(1.05)" }}
+                            >
+                            <Heading size="md" mb={2}>{card.name}</Heading>
+                            <Text mb={1}>{card.description}</Text>
+                            <Text fontWeight="bold" color="teal.500">Price: {card.price}</Text>
+                            <Text color="gray.500">Time: {card.time}</Text>
+
+                        {isCurrentUser && (
+                            <>
+                            <Button 
+                                mt={4} 
+                                colorScheme="red" 
+                                onClick={() => handleDeleteCard(card._id)}
+                            >
+                                Delete
+                            </Button>
+                            </>
                 
-            )}
-                </Box>
-                ))}
-            </SimpleGrid>
-            )}
-</Box>
+                        )}
+                            </Box>
+                            ))}
+                        </SimpleGrid>
+                        )}
+                                </Box>
+                                </TabPanel>
+                                <TabPanel>
+                                    <MentorAppointments mentorId={userId}/>
+                                    {
+                                        console.log(userId)
+                                    }
                                 </TabPanel>
                             </TabPanels>
                         </Tabs>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes,Navigate  } from 'react-router-dom';
 import theme from './theme';  
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -25,14 +25,16 @@ import { LoadingProvider, useLoading } from './helpers/loadingContext';
 import VerifyProfile from './pages/VerifyProfile';
 const AppContent = () => {
   const { isLoading } = useLoading();
+  const userInfo = localStorage.getItem("userInfo");
 
   return (
     <>
       {isLoading && <LoadingPage />}
       <Routes>
-        <Route path="/login" element={<AuthForm />} />
-        <Route path="/register" element={<AuthForm />} />
-        <Route path="/" element={<Home />} />
+        <Route path="/login" element={userInfo ? <Navigate to={`/user-home-page`} replace /> : <AuthForm />} />
+        <Route path="/register" element={userInfo ? <Navigate to={`/user-home-page`} replace /> : <AuthForm />} />
+
+        <Route path="/" element={userInfo ? <Navigate to={`/user-home-page`} replace /> : <Home />} />
         <Route
           path="*"
           element={

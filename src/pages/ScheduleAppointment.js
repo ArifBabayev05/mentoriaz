@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import TimePicker from 'react-time-picker';
-
 import {
     Box,
     VStack,
@@ -13,7 +12,9 @@ import {
     useToast,
     Flex,
     Badge,
-    IconButton
+    IconButton,
+    Select,
+    Input
 } from '@chakra-ui/react';
 import {Calendar} from "react-multi-date-picker";
 import {FaLinkedin, FaTwitter, FaGithub, FaClock, FaUserAlt} from 'react-icons/fa';
@@ -29,6 +30,8 @@ const ScheduleAppointment = () => {
     const {mentorId} = useParams();
     const [mentor,
         setMentor] = useState(null);
+    const [meetingData,
+        setMeetingData] = useState(null);
     const [date,
         setDate] = useState(null);
     const [time,
@@ -46,55 +49,159 @@ const ScheduleAppointment = () => {
     }, [mentorId]);
 
     const formatTime = (time) => {
-        const [hours,
-            minutes] = time.split(':');
-        const formattedHours = hours.length === 1
-            ? `0${hours}`
-            : hours;
-        return `${formattedHours}:${minutes}`;
-    };
+        // Ensure two-digit minutes using padStart
+        const [hours, minutes] = time.split(':');
+        const formattedHours = hours.length === 1 ? `0${hours}` : hours;
+        const formattedMinutes = minutes.toString().padStart(2, '0');
+        return `${formattedHours}:${formattedMinutes}`;
+      };
 
-    const scheduleAppointment = async() => {
+      const scheduleAppointment = async () => {
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-
-        if (!date || !time) {
-            toast({title: 'Error', description: "Please select both date and time.", status: 'error', duration: 5000, isClosable: true});
+    
+        if (!userInfo) {
+            toast({
+                title: 'Xəta',
+                description: "İstifadəçi məlumatları tapılmadı",
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
             return;
         }
+    
         setIsLoading(true);
+    
+        const startDate = new Date().toISOString(); 
+        const endDate = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    
+        try {
+            const meetingResponse = await fetch('http://localhost:5000/create-meeting', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    start_date: startDate,
+                    end_date: endDate
 
-        const formattedDate = new Date(date.year, date.month.index, date.day);
-        const [hours,
-            minutes] = time.split(':');
-        formattedDate.setHours(hours);
-        formattedDate.setMinutes(minutes);
-        const response = await fetch('http://localhost:5000/api/appointments', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                userId: userInfo._id,
-                mentor: mentor.user.name,
-                date: formattedDate.toLocaleDateString(),
-                time: formatTime(`${formattedDate.getHours()}:${formattedDate.getMinutes()}`)
-            })
-        });
-
-        if (response.ok) {
+                })
+            });
+    
+            // if (!meetingResponse.ok) throw new Error("Meeting creation failed");
+    
+            // const meetingData = await meetingResponse.json();
+            // setMeetingData(meetingData);
+    
+            // if (!meetingData || !meetingData.roomUrl || !meetingData.meetingId) {
+            //     toast({
+            //         title: 'Xəta',
+            //         description: 'Görüş məlumatları tapılmadı, lütfən yenidən cəhd edin.',
+            //         status: 'error',
+            //         duration: 5000,
+            //         isClosable: true,
+            //     });
+            //     setIsLoading(false);
+            //     return;
+            // }
+            if (!date || !time || !selectedCard) {
+                toast({
+                    title: 'Xəta',
+                    description: "Tarix, gün və paket seçilməlidir",
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                    color: "white"
+                });
+                setIsLoading(false);
+                return;
+            }
+    
+            const formattedDate = new Date(date.year, date.month.index, date.day);
+            const [hours, minutes] = time.split(':');
+            formattedDate.setHours(hours);
+            formattedDate.setMinutes(minutes);
+    
+            const appointmentResponse = await fetch('http://localhost:5000/api/appointments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userInfo._id,
+                    mentorId: mentor.user._id,
+                    date: formattedDate.toLocaleDateString(),
+                    time: formatTime(`${formattedDate.getHours()}:${formattedDate.getMinutes()}`),
+                    packageId: selectedCard,
+                    meetingURL: null, //status update olduqda link generasya ediləcək.
+                    meetingID: null
+                })
+            });
+            if (appointmentResponse.ok) {
+                toast({
+                    title: 'Görüş istəyi yaradıldı.',
+                    description: "Görüşmə istəyi mentor'a göndərildi",
+                    status: 'success',
+                    duration: 5000,
+                    isClosable: true,
+                });
+                navigate('/dashboard');
+            } else {
+                throw new Error("Appointment creation failed");
+            }
+    
+        } catch (error) {
+            // Error handling
+            toast({
+                title: 'Xəta baş verdi',
+                description: "Görüşmə yaradılan zaman xəta yarandı, yenidən cəhd edin və ya dəstək komandasına bildirin.",
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+            console.error('Error:', error);
+        } finally {
+            // Hide loading state
             setIsLoading(false);
-            toast({title: 'Appointment scheduled.', description: "Your appointment has been scheduled successfully.", status: 'success', duration: 5000, isClosable: true});
-            //navigate('/dashboard');
-        } else {
-            toast({title: 'Error scheduling appointment.', description: "There was an error scheduling your appointment. Please try again.", status: 'error', duration: 5000, isClosable: true});
         }
     };
-    const [selectedTime,
-        setSelectedTime] = useState(null);
+    
 
-    const handleTimeChange = (value) => {
-        const formattedTime = value;
-        setSelectedTime(formattedTime);
+    const timeslots = [
+        "09:00",
+        "09:30",
+        "10:00",
+        "10:30",
+        "11:00",
+        "11:30",
+        "12:00",
+        "12:30",
+        "13:00",
+        "13:30",
+        "14:00",
+        "14:30",
+        "15:00",
+        "15:30",
+        "16:00",
+        "16:30",
+        "17:00",
+        "17:30",
+        "18:00",
+        "18:30",
+        "19:00",
+        "19:30",
+        "20:00",
+        "20:30",
+        "21:00",
+        "21:30",
+        "22:00",
+        "22:30",
+        "23:00"
+
+    ];
+
+    const handleTimeChange = (e) => {
+        setTime(e.target.value);
     };
 
     return (
@@ -121,7 +228,7 @@ const ScheduleAppointment = () => {
                         w={{
                         base: 'full',
                         md: 'full',
-                        lg: '25%'
+                        lg: '30%'
                     }}
                         mb={{
                         base: 4,
@@ -200,7 +307,7 @@ const ScheduleAppointment = () => {
                         w={{
                         base: 'full',
                         md: 'full',
-                        lg: '75%'
+                        lg: '70%'
                     }}
                         spacing={4}>
                         <Heading as="h3" size="lg" mb={2}>
@@ -224,35 +331,17 @@ const ScheduleAppointment = () => {
                                     width: '100%',
                                     boxShadow: 'none'
                                 }}/>
+
+                                <VStack spacing={4} justifyContent="start" display="inline">
+                                    <Input list="timeslots"
+                                        placeholder="Select or enter time (HH:mm)" value={time} onChange={handleTimeChange} borderRadius="8px" border="1px solid #ccc" focusBorderColor="blue.500" size="md" width="70%"/> {/* Datalist for predefined timeslots */}
+                                    <datalist id="timeslots">
+                                        {timeslots.map((slot) => (<option key={slot} value={slot}/>))}
+                                    </datalist>
+                                </VStack>
                             </Box>
 
-                            <Box
-                                p={6}
-                                bg="gray.100"
-                                borderRadius="lg"
-                                boxShadow="lg"
-                                maxW="400px"
-                                mx="auto"
-                                mt={8}>
-                                <Heading as="h3" size="lg" textAlign="center" mb={4} color="blue.500">Select Time</Heading>
-
-                                <Box textAlign="center" mb={6}>
-                                    <TimePicker onChange={handleTimeChange} value={selectedTime} disableClock={true} // Saat simgesini gizler
-                                        format="HH:mm" // 24 saat formatı
-                                        clearIcon={null} // Temizleme ikonunu gizler
-                                        clockIcon={null} // Saat ikonunu gizler
-                                        className="custom-time-picker" // Özel sınıf ekleyerek özelleştiriyoruz
-                                    />
-                                </Box>
-
-                                {selectedTime && (
-                                    <Box textAlign="center" p={4} bg="blue.100" borderRadius="md" boxShadow="md">
-                                        <Text fontWeight="bold" color="blue.700">Selected Time: {selectedTime}</Text>
-                                    </Box>
-                                )}
-                            </Box>
-
-                            <Box flex="1">
+                            <Box flex="1.5">
                                 <Text mt={4} fontWeight="bold">Available Cards</Text>
                                 <VStack spacing={4} align="start" w="full">
                                     {mentor
@@ -281,7 +370,7 @@ const ScheduleAppointment = () => {
                             </Box>
 
                         </Flex>
-                        <Button mt={6} colorScheme="blue" w="full" onClick={scheduleAppointment}>
+                        <Button mt={6} colorScheme="blue" w="full" isDisabled={!selectedCard} onClick={scheduleAppointment}>
                             Confirm
                         </Button>
                     </VStack>

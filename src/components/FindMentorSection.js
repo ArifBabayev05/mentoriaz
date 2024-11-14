@@ -1,20 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState  } from 'react';
 import { Box, Heading, Text, Button, HStack, Image, Flex, Badge, Wrap, WrapItem } from '@chakra-ui/react';
 import {Link} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+
 
 const filters = ['UI/UX', 'Design', 'Marketing', 'Product', 'Java', 'Mobile', 'C++', 'Data Science', 'Python', 'C++', 'Data Science', 'Python'];
 
 const MentorCard = ({ mentor }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    const userData = localStorage.getItem("userInfo");
+    if (!userData) {
+      navigate("/login");
+    } else {
+      navigate(`/profile/${mentor.user._id}`);
+    }
+  };
+
   return (
-    <Box as={Link} to={`/profile/${mentor.user._id}`} bg="white" p={6} rounded="md" shadow="sm" textAlign="left" maxW="sm" m={4}>
-      <Image 
-        src={mentor.photo ? `http://localhost:5000${mentor.photo}` : `https://cdn-icons-png.freepik.com/512/147/147142.png`} 
-        alt={mentor.user.name} 
-        borderRadius="full" 
-        mb={4} 
-        boxSize="120px" 
-        objectFit="cover" 
-        mx="auto" 
+    <Box
+      onClick={handleCardClick}
+      bg="white"
+      p={6}
+      rounded="md"
+      shadow="sm"
+      textAlign="left"
+      maxW="sm"
+      m={4}
+      cursor="pointer"  // Make the card appear clickable
+    >
+      <Image
+        src={mentor.photo ? `http://localhost:5000${mentor.photo}` : `https://cdn-icons-png.freepik.com/512/147/147142.png`}
+        alt={mentor.user.name}
+        borderRadius="full"
+        mb={4}
+        boxSize="120px"
+        objectFit="cover"
+        mx="auto"
       />
       <Heading as="h3" size="md" mb={2}>{mentor.user.name}</Heading>
       <Text fontSize="sm" color="gray.600" mb={2}>{mentor.title}</Text>
@@ -27,7 +50,7 @@ const MentorCard = ({ mentor }) => {
 
       {mentor.skills && mentor.skills.length > 0 && (
         <Wrap>
-          {mentor.skills.map(skill => (
+          {mentor.skills.map((skill) => (
             <WrapItem key={skill}>
               <Badge colorScheme="blue" mr={1}>{skill}</Badge>
             </WrapItem>
@@ -37,7 +60,6 @@ const MentorCard = ({ mentor }) => {
     </Box>
   );
 };
-
 const FindMentorSection = () => {
   const [mentors, setMentors] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState(null);
@@ -59,22 +81,19 @@ const FindMentorSection = () => {
 
   const toggleFilterVisibility = () => {
     if (showAllFilters) {
-      // Hide additional filters and clear the selected filter
       setShowAllFilters(false);
       setSelectedFilter(null);
     } else {
-      // Show additional filters
       setShowAllFilters(true);
     }
   };
 
   const filteredMentors = mentors.filter(mentor => {
-    if (!selectedFilter) return true; // If no filter is selected, show all mentors
+    if (!selectedFilter) return true; 
 
-    return mentor.skills?.some(skill => skill.toLowerCase() === selectedFilter); // Check if any skill matches the filter
+    return mentor.skills?.some(skill => skill.toLowerCase() === selectedFilter); 
   });
 
-  // Split filters into visible and hidden parts
   const visibleFilters = filters.slice(0, 7);
   const hiddenFilters = filters.slice(7);
 
@@ -90,7 +109,7 @@ const FindMentorSection = () => {
         whiteSpace="nowrap" 
         mb={10} 
         px={4} 
-        css={{ scrollbarWidth: 'thin', msOverflowStyle: 'auto' }} // Thin scrollbar
+        css={{ scrollbarWidth: 'thin', msOverflowStyle: 'auto' }} 
         maxWidth="100%"
       >
         <HStack spacing="4" justify="center" flexWrap="wrap"  align="center" textAlign="center" minWidth="max-content">

@@ -21,8 +21,11 @@ import {SearchIcon, BellIcon} from '@chakra-ui/icons';
 import {Link, useNavigate} from 'react-router-dom';
 import logo from "../assets/images/mentor-main.png";
 const Header = () => {
+    
     const [profile,
         setProfile] = useState(null);
+
+
     const navigate = useNavigate();
 
     
@@ -32,6 +35,7 @@ const Header = () => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
             const response = await fetch(`http://localhost:5000/api/profile/${userInfo._id}`);
             const data = await response.json();
+
             setProfile(data);
         };
 
