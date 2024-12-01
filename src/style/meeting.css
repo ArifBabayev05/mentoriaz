@@ -72,3 +72,83 @@
     padding: 0 5px;
   }
   
+
+  /* Calendar for mentors */
+  .calendar-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: #f9fafb;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+  }
+  
+  .react-calendar {
+    border: none;
+    font-family: Arial, sans-serif;
+    width: 100%;
+    background-color: transparent;
+  }
+  
+  .react-calendar__navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2388FF;
+    color: white;
+    border-radius: 10px 10px 0 0;
+    padding: 0.5rem 1rem;
+  }
+  
+  .react-calendar__navigation button {
+    color: white;
+    font-weight: bold;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  
+  .react-calendar__month-view__weekdays {
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: bold;
+    padding: 0.5rem 0;
+  }
+  
+  .react-calendar__tile {
+    background: none;
+    border-radius: 5px;
+    padding: 0.5rem;
+    transition: background 0.3s, transform 0.2s;
+    text-align: center;
+  }
+  
+  .react-calendar__tile--now {
+    background: #ffd700;
+    color: white;
+    border-radius: 5px;
+  }
+  
+  .react-calendar__tile--active {
+    background: #2388FF;
+    color: white;
+    transform: scale(1.05);
+  }
+  
+  .react-calendar__tile:hover {
+    background: #e3f2fd;
+    transform: scale(1.05);
+  }
+  
+  .highlight {
+    background-color: #2388FF;
+    color: white;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  

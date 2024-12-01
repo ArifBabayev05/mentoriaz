@@ -72,38 +72,10 @@ const ScheduleAppointment = () => {
     
         setIsLoading(true);
     
-        const startDate = new Date().toISOString(); 
-        const endDate = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+        
     
         try {
-            const meetingResponse = await fetch('http://localhost:5000/create-meeting', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    start_date: startDate,
-                    end_date: endDate
-
-                })
-            });
-    
-            // if (!meetingResponse.ok) throw new Error("Meeting creation failed");
-    
-            // const meetingData = await meetingResponse.json();
-            // setMeetingData(meetingData);
-    
-            // if (!meetingData || !meetingData.roomUrl || !meetingData.meetingId) {
-            //     toast({
-            //         title: 'Xəta',
-            //         description: 'Görüş məlumatları tapılmadı, lütfən yenidən cəhd edin.',
-            //         status: 'error',
-            //         duration: 5000,
-            //         isClosable: true,
-            //     });
-            //     setIsLoading(false);
-            //     return;
-            // }
+            
             if (!date || !time || !selectedCard) {
                 toast({
                     title: 'Xəta',

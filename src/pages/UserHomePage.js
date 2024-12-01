@@ -35,15 +35,38 @@ import {
     FaHeart,
     FaCalendarAlt
 } from 'react-icons/fa';
+import axios from "axios";
 import { useLoading } from '../helpers/loadingContext';
 
 const MentorCard = ({ mentor }) => {
+    const [reviewsCount, setReviewsCount] = useState(0);
+
+    useEffect(() => {
+        const fetchReviews = async () => {
+          try {
+            const response = await axios.get(`http://localhost:5000/api/reviews/${mentor.user._id}`);
+            const reviews = response.data;
+            const count = reviews.filter(review => review.mentor === mentor.user._id).length;
+            setReviewsCount(count);
+          } catch (error) {
+            console.error("Error fetching reviews:", error);
+          }
+        };
+    
+        fetchReviews();
+      }, [mentor.user._id]);
+
     return (
         <RouterLink to={"/profile/" + mentor.user._id}>
             <Box bg="white" p={4} rounded="md" shadow="sm" textAlign="center">
                 <Avatar src={`http://localhost:5000${mentor.photo}`} alt={mentor.name} size="xl" mb={4} />
                 <Heading as="h3" size="md" mb={2}>
                     {mentor.user.name}
+
+                    <Badge colorScheme="gray">
+                    {mentor.specialty}
+                    </Badge>
+
                 </Heading>
                 <HStack spacing={2} mb={2} justifyContent="center">
                     {mentor.skills?.map((skill) => (
@@ -53,7 +76,7 @@ const MentorCard = ({ mentor }) => {
                     ))}
                 </HStack>
                 <Text fontSize="sm" color="gray.600">
-                    ⭐ {mentor.sessions} sessions ({mentor.reviews} reviews)
+                    ⭐ 0 sessions ({reviewsCount} reviews)
                 </Text>
                 {mentor.newMentor && (
                     <Text fontSize="sm" mt={2} color="gray.600">

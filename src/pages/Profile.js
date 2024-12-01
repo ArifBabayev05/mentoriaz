@@ -362,26 +362,41 @@ const handleVerifyProfile = () => {
                             {profile.socialMedia
                                 ?.linkedin && (
                                     <Link href={profile.socialMedia.linkedin} isExternal>
-                                        <Text>LinkedIn</Text>
+                                        <Image
+                                            src={images['lnk.png']}
+                                            alt="Facebook Logo"
+                                            boxSize="24px"
+                                        />
                                     </Link>
                                 )}
                             {profile.socialMedia
                                 ?.facebook && (
                                     <Link href={profile.socialMedia.facebook} isExternal>
-                                        <Text>Facebook</Text>
+                                        <Image
+                                            src={images['fcb.png']}
+                                            alt="Facebook Logo"
+                                            boxSize="24px"
+                                        />
                                     </Link>
                                 )}
                             {profile.socialMedia
                                 ?.instagram && (
                                     <Link href={profile.socialMedia.instagram} isExternal>
-                                        <Text>Instagram</Text>
+                                        <Image
+                                            src={images['ins.png']}
+                                            alt="Facebook Logo"
+                                            boxSize="24px"
+                                        />
                                     </Link>
                                 )}
                         </HStack>
                     </VStack>
-                    {isCurrentUser && (
+                    {isCurrentUser  &&(
                         <>
-                        <Button
+                        {
+                            profile.isVerificated !== '1' && 
+                            (
+                                <Button
                             leftIcon={< EditIcon />}
                             onClick={handleVerifyProfile}
                             colorScheme="blue"
@@ -392,6 +407,8 @@ const handleVerifyProfile = () => {
                         }}>
                             Profili təsdiqlə
                         </Button>
+                            )
+                        }
                         <Button
                             leftIcon={< EditIcon />}
                             onClick={handleEditProfile}
@@ -451,10 +468,10 @@ const handleVerifyProfile = () => {
                                     <Text>{profile.description}</Text>
                                     <Divider my={4}/>
                                     <Text fontSize="lg" fontWeight="bold">
-                                        Disciplines
+                                        Interests
                                     </Text>
                                     <HStack spacing={4} wrap="wrap">
-                                        {profile.disciplines
+                                        {profile.interests
                                             ?.map((discipline, index) => (
                                                 <Tag key={index} colorScheme="blue">
                                                     {discipline}

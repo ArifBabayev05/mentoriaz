@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Button, TabPanel, Text, useToast } from '@chakra-ui/react';
+import { Box, Button, TabPanel, Text, useToast, Heading, Image, Flex, Select, Checkbox,SimpleGrid } from '@chakra-ui/react';
+import images from '../helpers/imageLoader';
 
 const MentorAppointments = ({ mentorId }) => {
   const [appointments, setAppointments] = useState([]);
   const [mentor, setMentor] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [filter, setFilter] = useState('all'); // Filter state: 'all', 'pending', 'accepted', 'declined'
+  const [showPast, setShowPast] = useState(false); // State to control the toggle for past appointments
   const toast = useToast();
 
   useEffect(() => {
@@ -14,7 +17,6 @@ const MentorAppointments = ({ mentorId }) => {
         const appointmentsResponse = await axios.get(`http://localhost:5000/api/appointments/${mentorId}`);
         const appointmentsData = appointmentsResponse.data;
 
-        console.log(appointmentsData);
         if (Array.isArray(appointmentsData)) {
           setAppointments(appointmentsData);
         } else {
@@ -43,10 +45,9 @@ const MentorAppointments = ({ mentorId }) => {
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
     setIsLoading(true); // Start loading
 
-    try {
-      let meetingData = null;
+    let meetingData = null;
 
-      // If accepted (status 1), create a meeting
+    try {
       if (newStatus === '1') {
         const startDate = new Date().toISOString();
         const endDate = new Date(Date.now() + 60 * 60 * 1000).toISOString();
@@ -112,39 +113,140 @@ const MentorAppointments = ({ mentorId }) => {
     }
   };
 
+  const handleFilterChange = () => {
+    let filteredAppointments = appointments;
+
+    // Filter by status
+    if (filter !== 'all') {
+      filteredAppointments = filteredAppointments.filter((appointment) => appointment.isAccepted === filter);
+    }
+
+    // Show only future appointments if 'showPast' is unchecked
+    if (!showPast) {
+      const currentDate = new Date().toISOString();
+      filteredAppointments = filteredAppointments.filter((appointment) => new Date(appointment.date) >= new Date(currentDate));
+    }
+
+    return filteredAppointments;
+  };
+
+  const filteredAppointments = handleFilterChange();
+
   return (
     <TabPanel>
       <Box w="100%" mx="auto">
-        {appointments?.some(appointment => appointment.isAccepted === '2') ? ( // Check if there are appointments with status '2'
-          appointments?.filter(appointment => appointment.isAccepted === '2').map((appointment) => ( // Filter appointments with status '2'
-            <Box key={appointment._id} borderWidth="0px" borderRadius="lg" p={4} my={2}>
-              <Text>Date: {appointment.date}</Text>
-              <Text>Time: {appointment.time}</Text>
-              <Text>Status: {appointment.isAccepted}</Text>
-              <Text>Package: {findPackageNameById(appointment.packageId)}</Text>    
-              <Button
-                colorScheme="green"
-                onClick={() => updateAppointmentStatus(appointment._id, '1')} 
-                mr={2}
-                isLoading={isLoading}
-              >
-                Accept
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={() => updateAppointmentStatus(appointment._id, '0')} 
-                isLoading={isLoading}
-              >
-                Decline
-              </Button>
+        <Flex justify="flex-start" mb={4} gap={4}>
+          <Select onChange={(e) => setFilter(e.target.value)} value={filter} width="200px">
+            <option value="all">All</option>
+            <option value="2">Pending</option>
+            <option value="1">Accepted</option>
+            <option value="0">Declined</option>
+          </Select>
+          <Checkbox 
+            isChecked={showPast} 
+            onChange={() => setShowPast(!showPast)} 
+          >
+            Keçmiş görüşləri də göstər
+          </Checkbox>
+        </Flex>
+  
+        {/* Show message if no appointments match the filter */}
+        {filteredAppointments.length === 0 ? (
+          <>
+            <Heading textAlign="center" size="lg">
+              Axtardığınız tipdə istək hələki mövcud deyildir
+            </Heading>
+            <Box
+              mx="auto"
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <Image w="30%" src={images['nf.png']} />
             </Box>
-          ))
+          </>
         ) : (
-          <Text>No appointment requests at the moment</Text> 
+          // Render filtered appointments
+          <Flex wrap="wrap" justify="center" gap={4}>
+            {filteredAppointments.map((appointment) => (
+              <Box
+                key={appointment._id}
+                borderWidth="1px"
+                borderRadius="lg"
+                p={4}
+                my={4}
+                bg="white"
+                boxShadow="lg"
+                maxWidth="sm"
+                d="flex"
+                _hover={{ boxShadow: '2xl', transform: 'scale(1.02)' }}
+                transition="all 0.3s"
+                width={['100%', '48%', '30%']} // Ensures responsive layout
+              >
+                <Text fontSize="lg" fontWeight="bold" mb={2}>
+                  Appointment Details
+                </Text>
+                <Flex direction="column" gap={2} mb={4}>
+                  <Text>
+                    <strong>Date:</strong> {appointment.date}
+                  </Text>
+                  <Text>
+                    <strong>Time:</strong> {appointment.time}
+                  </Text>
+                  <Text>
+                    <strong>Status:</strong> {appointment.isAccepted === '1' ? 'Accepted' : appointment.isAccepted === '0' ? 'Declined' : 'Pending'}
+                  </Text>
+                  <Text>
+                    <strong>Package:</strong> {findPackageNameById(appointment.packageId)}
+                  </Text>
+                </Flex>
+  
+                <Flex justifyContent="space-between" wrap="wrap" gap={4}>
+                  {appointment.isAccepted === '2' ? (
+                    <>
+                      <Button
+                        colorScheme="green"
+                        size="sm"
+                        onClick={() => updateAppointmentStatus(appointment._id, '1')}
+                        isLoading={isLoading}
+                        width={['100%', '48%']}
+                      >
+                        Accept
+                      </Button>
+                      <Button
+                        colorScheme="red"
+                        size="sm"
+                        onClick={() => updateAppointmentStatus(appointment._id, '0')}
+                        isLoading={isLoading}
+                        width={['100%', '48%']}
+                      >
+                        Decline
+                      </Button>
+                    </>
+                  ) : (
+                    appointment.isAccepted === '1' && appointment.meetingURL ? (
+                      <Button
+                        colorScheme="blue"
+                        size="sm"
+                        onClick={() => window.open(appointment.meetingURL, '_blank')}
+                        width="100%"
+                      >
+                        Join Meeting
+                      </Button>
+                    ) : null
+                  )}
+                </Flex>
+              </Box>
+            ))}
+          </Flex>
         )}
       </Box>
     </TabPanel>
   );
+  
+  
+  
 };
 
 export default MentorAppointments;

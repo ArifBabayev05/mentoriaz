@@ -23,6 +23,7 @@ import Meeting from './pages/Meeting';
 import LoadingPage from './components/LoadingPage'; 
 import { LoadingProvider, useLoading } from './helpers/loadingContext'; 
 import VerifyProfile from './pages/VerifyProfile';
+import NotFound from './pages/NotFound';
 const AppContent = () => {
   const { isLoading } = useLoading();
   const userInfo = localStorage.getItem("userInfo");
@@ -50,7 +51,8 @@ const AppContent = () => {
                 <Route path="/complaint" element={<ComplaintForm />} />
                 <Route path="/payment" element={<Payment />} />
                 <Route path="/search-mentors" element={<MentorSearch />} />
-                <Route path="/:roomId" element={<Meeting />} />
+                <Route path="*" element={<NotFound />} />
+
               </Routes>
               <Footer />
             </>
