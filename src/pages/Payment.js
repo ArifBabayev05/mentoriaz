@@ -1,88 +1,72 @@
 import React, { useState } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { Box, Button, FormControl, FormLabel, Input, VStack } from '@chakra-ui/react';
+import { Box, Button, Container, Typography, TextField, CircularProgress } from '@mui/material';
+import axios from 'axios';
 
-const stripePromise = loadStripe('YOUR_STRIPE_PUBLIC_KEY'); // YOUR_STRIPE_PUBLIC_KEY ile kendi Stripe Public Key'inizi değiştirin
-
-const CheckoutForm = () => {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [amount, setAmount] = useState('');
+const Payment = ({ appointmentData }) => {
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!stripe || !elements) {
-      return;
-    }
-
+  const handlePayment = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/payment/create-payment-intent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ amount }),
+      setLoading(true);
+      setError(null);
+      
+      // Make API call to your backend to initiate payment
+      const response = await axios.post('/api/payments/create', {
+        amount: appointmentData.price,
+        description: `Mentorship session with ${appointmentData.mentorName}`,
+        currency: 'AZN'
       });
 
-      const data = await response.json();
-      const clientSecret = data.clientSecret;
-
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement),
-        },
-      });
-
-      if (result.error) {
-        setError(result.error.message);
-      } else {
-        if (result.paymentIntent.status === 'succeeded') {
-          setError(null);
-          alert('Payment successful!');
-        }
+      // Redirect to GoldenPay payment page
+      if (response.data.paymentUrl) {
+        window.location.href = response.data.paymentUrl;
       }
-    } catch (error) {
-      setError(error.message);
+    } catch (err) {
+      setError('Payment initialization failed. Please try again.');
+      console.error('Payment error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <VStack spacing="4">
-        <FormControl id="amount" isRequired>
-          <FormLabel>Amount</FormLabel>
-          <Input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
-        </FormControl>
+    <Container maxWidth="sm">
+      <Box sx={{ mt: 4, mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Payment Details
+        </Typography>
 
-        <FormControl id="card" isRequired>
-          <FormLabel>Card Details</FormLabel>
-          <CardElement />
-        </FormControl>
+        <Box sx={{ mt: 3 }}>
+          <Typography variant="body1" gutterBottom>
+            Session Details:
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Amount: {appointmentData?.price} AZN
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Mentor: {appointmentData?.mentorName}
+          </Typography>
+        </Box>
 
-        {error && <Box color="red.500">{error}</Box>}
+        {error && (
+          <Typography color="error" sx={{ mt: 2 }}>
+            {error}
+          </Typography>
+        )}
 
-        <Button type="submit" colorScheme="teal" width="full" disabled={!stripe}>
-          Pay
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={handlePayment}
+          disabled={loading}
+          sx={{ mt: 3 }}
+        >
+          {loading ? <CircularProgress size={24} /> : 'Proceed to Payment'}
         </Button>
-      </VStack>
-    </form>
-  );
-};
-
-const Payment = () => {
-  return (
-    <Box w="md" mx="auto" mt="10">
-      <Elements stripe={stripePromise}>
-        <CheckoutForm />
-      </Elements>
-    </Box>
+      </Box>
+    </Container>
   );
 };
 
