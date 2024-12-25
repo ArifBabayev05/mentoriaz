@@ -13,49 +13,52 @@ const AdminProfiles = () => {
 
   useEffect(() => {
     const fetchProfiles = async () => {
-      const response = await axiosInstance.get('/api/admin/profiles');
-      const data = await response.json();
-      setProfiles(data);
-      
+      try {
+        const response = await axiosInstance.get(ENDPOINTS.ADMIN.PROFILES.LIST);
+        setProfiles(response.data);
+      } catch (error) {
+        console.error('Error fetching profiles:', error);
+      }
     };
 
     fetchProfiles();
   }, []);
 
   const handleCreateOrUpdateProfile = async () => {
-    const method = selectedProfile ? 'PUT' : 'POST';
-    const url = selectedProfile ? `http://localhost:5000/api/admin/profiles/${selectedProfile._id}` : 'http://localhost:5000/api/admin/profiles';
+    try {
+      const url = selectedProfile 
+        ? ENDPOINTS.ADMIN.PROFILES.UPDATE(selectedProfile._id)
+        : ENDPOINTS.ADMIN.PROFILES.LIST;
 
-    const response = await axiosInstance.post(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ description, speciality }),
-    });
+      const response = await axiosInstance({
+        method: selectedProfile ? 'PUT' : 'POST',
+        url,
+        data: { description, speciality }
+      });
 
-    if (response.ok) {
-      const profile = await response.json();
-      if (selectedProfile) {
-        setProfiles(profiles.map((p) => (p._id === profile._id ? profile : p)));
-        toast({ title: 'Profile updated.', status: 'success', duration: 5000, isClosable: true });
-      } else {
-        setProfiles([...profiles, profile]);
-        toast({ title: 'Profile created.', status: 'success', duration: 5000, isClosable: true });
+      if (response.status === 200) {
+        if (selectedProfile) {
+          setProfiles(profiles.map((p) => (p._id === response.data._id ? response.data : p)));
+          toast({ title: 'Profile updated.', status: 'success', duration: 5000, isClosable: true });
+        } else {
+          setProfiles([...profiles, response.data]);
+          toast({ title: 'Profile created.', status: 'success', duration: 5000, isClosable: true });
+        }
+        onClose();
       }
-      onClose();
-    } else {
+    } catch (error) {
       toast({ title: 'Error saving profile.', status: 'error', duration: 5000, isClosable: true });
     }
   };
 
   const handleDeleteProfile = async (id) => {
-    const response = await fetch(`http://localhost:5000/api/admin/profiles/${id}`, {
-      method: 'DELETE',
-    });
-
-    if (response.ok) {
-      setProfiles(profiles.filter((profile) => profile._id !== id));
-      toast({ title: 'Profile deleted.', status: 'success', duration: 5000, isClosable: true });
-    } else {
+    try {
+      const response = await axiosInstance.delete(ENDPOINTS.ADMIN.PROFILES.DELETE(id));
+      if (response.status === 200) {
+        setProfiles(profiles.filter((profile) => profile._id !== id));
+        toast({ title: 'Profile deleted.', status: 'success', duration: 5000, isClosable: true });
+      }
+    } catch (error) {
       toast({ title: 'Error deleting profile.', status: 'error', duration: 5000, isClosable: true });
     }
   };

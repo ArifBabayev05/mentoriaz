@@ -9,21 +9,25 @@ const AdminAppointments = () => {
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      const response = await axiosInstance.get('/api/admin/appointments');
-      const data = await response.json();
-      setAppointments(data);
+      try {
+        const response = await axiosInstance.get(ENDPOINTS.ADMIN.APPOINTMENTS.LIST);
+        setAppointments(response.data);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      }
     };
 
     fetchAppointments();
   }, []);
 
   const handleDeleteAppointment = async (id) => {
-    const response = await axiosInstance.delete(`/api/admin/appointments/${id}`);
-
-    if (response.ok) {
-      setAppointments(appointments.filter((appointment) => appointment._id !== id));
-      toast({ title: 'Appointment deleted.', status: 'success', duration: 5000, isClosable: true });
-    } else {
+    try {
+      const response = await axiosInstance.delete(ENDPOINTS.ADMIN.APPOINTMENTS.DELETE(id));
+      if (response.status === 200) {
+        setAppointments(appointments.filter((appointment) => appointment._id !== id));
+        toast({ title: 'Appointment deleted.', status: 'success', duration: 5000, isClosable: true });
+      }
+    } catch (error) {
       toast({ title: 'Error deleting appointment.', status: 'error', duration: 5000, isClosable: true });
     }
   };
