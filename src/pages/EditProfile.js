@@ -22,6 +22,7 @@ import {
 } from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import { useLoading } from '../helpers/loadingContext';
+import axiosInstance from '../axios.config';
 
 const EditProfile = () => {
     const { setIsLoading } = useLoading();
@@ -44,7 +45,7 @@ const EditProfile = () => {
             setIsLoading(true);
             try {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-                const response = await fetch(`http://localhost:5000/api/profile/${userInfo._id}`);
+                const response = await axiosInstance.get(`/api/profile/${userInfo._id}`);
                 const data = await response.json();
 
                 setPhoto(data.photo || '');
@@ -76,9 +77,10 @@ const EditProfile = () => {
         const formData = new FormData();
         formData.append('file', file);
 
-        const response = await fetch('http://localhost:5000/api/upload', {
-            method: 'POST',
-            body: formData
+        const response = await axiosInstance.post('/api/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
         });
 
         const data = await response.json();
@@ -90,23 +92,17 @@ const EditProfile = () => {
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/profile', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    userId: userInfo._id,
-                    photo,
-                    bannerPhoto,
-                    description,
-                    experience,
-                    education,
-                    socialMedia,
-                    interests,
-                    skills,
-                    specialty
-                })
+            const response = await axiosInstance.put('/api/profile/update', {
+                userId: userInfo._id,
+                photo,
+                bannerPhoto,
+                description,
+                experience,
+                education,
+                socialMedia,
+                interests,
+                skills,
+                specialty
             });
 
             if (response.ok) {
@@ -206,7 +202,7 @@ const EditProfile = () => {
                                     <Text mt={2} color="gray.600">
                                         <Image
                                             mt={2}
-                                            src={"http://localhost:5000" + photo}
+                                            src={`${process.env.REACT_APP_API_URL}${photo}`}
                                             alt="Banner Preview"
                                             boxSize="100px"
                                             objectFit="cover"
@@ -234,7 +230,7 @@ const EditProfile = () => {
                                 </Button>
                                 {bannerPhoto && (<Image
                                     mt={2}
-                                    src={"http://localhost:5000" + bannerPhoto}
+                                    src={`${process.env.REACT_APP_API_URL}${bannerPhoto}`}
                                     alt="Banner Preview"
                                     boxSize="100px"
                                     width="300px"

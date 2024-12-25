@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Heading, Button, Table, Thead, Tbody, Tr, Th, Td, useToast } from '@chakra-ui/react';
+import axiosInstance from '../axios.config';
+import { ENDPOINTS } from '../utils/apiConfig';
 
 const AdminReviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -7,8 +9,8 @@ const AdminReviews = () => {
 
   useEffect(() => {
     const fetchReviews = async () => {
-      const response = await fetch('http://localhost:5000/api/admin/reviews');
-      const data = await response.json();
+      const response = await axiosInstance.get('/api/admin/reviews');
+      const data = await response.data;
       setReviews(data);
     };
 
@@ -16,11 +18,9 @@ const AdminReviews = () => {
   }, []);
 
   const handleDeleteReview = async (id) => {
-    const response = await fetch(`http://localhost:5000/api/admin/reviews/${id}`, {
-      method: 'DELETE',
-    });
+    const response = await axiosInstance.delete(`/api/admin/reviews/${id}`);
 
-    if (response.ok) {
+    if (response.status === 200) {
       setReviews(reviews.filter((review) => review._id !== id));
       toast({ title: 'Review deleted.', status: 'success', duration: 5000, isClosable: true });
     } else {

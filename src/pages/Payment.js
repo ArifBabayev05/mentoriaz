@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Container, Typography, TextField, CircularProgress } from '@mui/material';
-import axios from 'axios';
+import axiosInstance from '../../axios.config';
 
 const Payment = ({ appointmentData }) => {
   const [loading, setLoading] = useState(false);
@@ -12,7 +12,7 @@ const Payment = ({ appointmentData }) => {
       setError(null);
       
       // Make API call to your backend to initiate payment
-      const response = await axios.post('/api/payments/create', {
+      const response = await axiosInstance.post('/api/payments/create', {
         amount: appointmentData.price,
         description: `Mentorship session with ${appointmentData.mentorName}`,
         currency: 'AZN'

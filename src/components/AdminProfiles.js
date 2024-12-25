@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Heading, Button, Table, Thead, Tbody, Tr, Th, Td, useToast, FormControl, FormLabel, Input, Stack, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure } from '@chakra-ui/react';
+import axiosInstance from '../axios.config';
+import { ENDPOINTS } from '../utils/apiConfig';
 
 const AdminProfiles = () => {
   const [profiles, setProfiles] = useState([]);
@@ -11,7 +13,7 @@ const AdminProfiles = () => {
 
   useEffect(() => {
     const fetchProfiles = async () => {
-      const response = await fetch('http://localhost:5000/api/admin/profiles');
+      const response = await axiosInstance.get('/api/admin/profiles');
       const data = await response.json();
       setProfiles(data);
       
@@ -24,7 +26,7 @@ const AdminProfiles = () => {
     const method = selectedProfile ? 'PUT' : 'POST';
     const url = selectedProfile ? `http://localhost:5000/api/admin/profiles/${selectedProfile._id}` : 'http://localhost:5000/api/admin/profiles';
 
-    const response = await fetch(url, {
+    const response = await axiosInstance.post(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ description, speciality }),

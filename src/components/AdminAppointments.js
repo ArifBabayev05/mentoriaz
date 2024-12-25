@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Heading, Button, Table, Thead, Tbody, Tr, Th, Td, useToast } from '@chakra-ui/react';
+import axiosInstance from '../axios.config';
+import { ENDPOINTS } from '../utils/apiConfig';
 
 const AdminAppointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -7,7 +9,7 @@ const AdminAppointments = () => {
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      const response = await fetch('http://localhost:5000/api/admin/appointments');
+      const response = await axiosInstance.get('/api/admin/appointments');
       const data = await response.json();
       setAppointments(data);
     };
@@ -16,9 +18,7 @@ const AdminAppointments = () => {
   }, []);
 
   const handleDeleteAppointment = async (id) => {
-    const response = await fetch(`http://localhost:5000/api/admin/appointments/${id}`, {
-      method: 'DELETE',
-    });
+    const response = await axiosInstance.delete(`/api/admin/appointments/${id}`);
 
     if (response.ok) {
       setAppointments(appointments.filter((appointment) => appointment._id !== id));

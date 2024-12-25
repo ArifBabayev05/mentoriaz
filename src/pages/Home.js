@@ -28,6 +28,7 @@ import goal from '../assets/images/goal.png'
 import '../style/Home.css';
 import FindMentorSection from '../components/FindMentorSection';
 import FAQSection from '../components/FAQSection';
+import axiosInstance from '../axios.config';
 
 const Home = () => {
     return (
@@ -276,7 +277,7 @@ const Home = () => {
                         }, {
                             image: images['cal2.png'],
                             title: 'İnkişaf et',
-                            description: 'İnkişafına kömək edəcək güclü və dəstəkləyici resurslarla tanış ol.'
+                            description: 'İnkişafına kömək edəcək güclü və dəstəkl��yici resurslarla tanış ol.'
                         }
                     ].map((item, idx) => (
                         <Card maxW='sm' bg="background.500" border="none" shadow="none" key={idx}>

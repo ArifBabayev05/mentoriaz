@@ -19,6 +19,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import images from '../helpers/imageLoader';
+import axiosInstance from '../axios.config';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -32,18 +33,12 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          surname,
-          email,
-          password,
-          isMentor: isMentor === 'yes',
-        }),
+      const response = await axiosInstance.post('/api/auth/register', {
+        name,
+        surname,
+        email,
+        password,
+        isMentor: isMentor === 'yes',
       });
 
       if (!response.ok) {
