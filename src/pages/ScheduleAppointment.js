@@ -19,6 +19,7 @@ import {
 import {Calendar} from "react-multi-date-picker";
 import {FaLinkedin, FaTwitter, FaGithub, FaClock, FaUserAlt} from 'react-icons/fa';
 import {useLoading} from '../helpers/loadingContext';
+import { getApiUrl, getImageUrl } from '../utils/apiConfig';
 
 import '../style/meeting.css';
 
@@ -41,12 +42,29 @@ const ScheduleAppointment = () => {
 
     useEffect(() => {
         const fetchMentor = async() => {
-            const response = await fetch(`http://localhost:5000/api/mentors/${mentorId}`);
-            const data = await response.json();
-            setMentor(data);
+            try {
+                setIsLoading(true);
+                const response = await fetch(getApiUrl(`/api/mentors/${mentorId}`));
+                if (!response.ok) {
+                    throw new Error('Failed to fetch mentor');
+                }
+                const data = await response.json();
+                setMentor(data);
+            } catch (error) {
+                console.error('Error fetching mentor:', error);
+                toast({
+                    title: 'Error',
+                    description: 'Failed to load mentor information',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            } finally {
+                setIsLoading(false);
+            }
         };
         fetchMentor();
-    }, [mentorId]);
+    }, [mentorId, setIsLoading, toast]);
 
     const formatTime = (time) => {
         // Ensure two-digit minutes using padStart
@@ -61,8 +79,8 @@ const ScheduleAppointment = () => {
     
         if (!userInfo) {
             toast({
-                title: 'Xəta',
-                description: "İstifadəçi məlumatları tapılmadı",
+                title: 'Error',
+                description: "User information not found",
                 status: 'error',
                 duration: 5000,
                 isClosable: true,
@@ -78,12 +96,11 @@ const ScheduleAppointment = () => {
             
             if (!date || !time || !selectedCard) {
                 toast({
-                    title: 'Xəta',
-                    description: "Tarix, gün və paket seçilməlidir",
+                    title: 'Error',
+                    description: "Please select date, time, and package",
                     status: 'error',
                     duration: 5000,
                     isClosable: true,
-                    color: "white"
                 });
                 setIsLoading(false);
                 return;
@@ -94,7 +111,7 @@ const ScheduleAppointment = () => {
             formattedDate.setHours(hours);
             formattedDate.setMinutes(minutes);
     
-            const appointmentResponse = await fetch('http://localhost:5000/api/appointments', {
+            const appointmentResponse = await fetch(getApiUrl('/api/appointments'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -111,13 +128,13 @@ const ScheduleAppointment = () => {
             });
             if (appointmentResponse.ok) {
                 toast({
-                    title: 'Görüş istəyi yaradıldı.',
-                    description: "Görüşmə istəyi mentor'a göndərildi",
+                    title: 'Success!',
+                    description: "Appointment request has been sent to the mentor",
                     status: 'success',
                     duration: 5000,
                     isClosable: true,
                 });
-                navigate('/dashboard');
+                navigate('/user-home-page');
             } else {
                 throw new Error("Appointment creation failed");
             }
@@ -125,8 +142,8 @@ const ScheduleAppointment = () => {
         } catch (error) {
             // Error handling
             toast({
-                title: 'Xəta baş verdi',
-                description: "Görüşmə yaradılan zaman xəta yarandı, yenidən cəhd edin və ya dəstək komandasına bildirin.",
+                title: 'Error',
+                description: "An error occurred while creating the appointment. Please try again or contact support.",
                 status: 'error',
                 duration: 5000,
                 isClosable: true,
@@ -181,11 +198,14 @@ const ScheduleAppointment = () => {
             w="full"
             maxW="7xl"
             mx="auto"
-            mt="10"
+            mt={{ base: 4, md: 10 }}
+            mb={10}
             bg="white"
-            p={8}
-            rounded="lg"
-            shadow="md">
+            p={{ base: 4, md: 8 }}
+            borderRadius="2xl"
+            shadow="xl"
+            border="1px solid"
+            borderColor="gray.200">
             {mentor && (
                 <Flex
                     direction={{
@@ -210,7 +230,7 @@ const ScheduleAppointment = () => {
                         <Avatar
                             src={mentor
                             ?.photo
-                                ? `http://localhost:5000${mentor.photo}`
+                                ? getImageUrl(mentor.photo)
                                 : 'https://via.placeholder.com/150'}
                             size="2xl"
                             mb={4}/>
@@ -282,8 +302,8 @@ const ScheduleAppointment = () => {
                         lg: '70%'
                     }}
                         spacing={4}>
-                        <Heading as="h3" size="lg" mb={2}>
-                            Select a Date & Time
+                        <Heading as="h3" size="lg" mb={6} fontWeight="700">
+                            Select Date & Time
                         </Heading>
                         <Flex
                             w="full"
@@ -304,46 +324,62 @@ const ScheduleAppointment = () => {
                                     boxShadow: 'none'
                                 }}/>
 
-                                <VStack spacing={4} justifyContent="start" display="inline">
+                                <VStack spacing={4} justifyContent="start" mt={4}>
                                     <Input list="timeslots"
-                                        placeholder="Select or enter time (HH:mm)" value={time} onChange={handleTimeChange} borderRadius="8px" border="1px solid #ccc" focusBorderColor="blue.500" size="md" width="70%"/> {/* Datalist for predefined timeslots */}
+                                        placeholder="Select or enter time (HH:mm)" value={time} onChange={handleTimeChange} borderRadius="8px" border="1px solid #ccc" focusBorderColor="blue.500" size="md" width={{ base: '100%', md: '70%' }}/> {/* Datalist for predefined timeslots */}
                                     <datalist id="timeslots">
                                         {timeslots.map((slot) => (<option key={slot} value={slot}/>))}
                                     </datalist>
                                 </VStack>
                             </Box>
 
-                            <Box flex="1.5">
-                                <Text mt={4} fontWeight="bold">Available Cards</Text>
+                            <Box flex="1.5" pl={{ base: 0, md: 6 }} mt={{ base: 6, md: 0 }}>
+                                <Text mt={4} mb={4} fontWeight="700" fontSize="lg">Available Packages</Text>
                                 <VStack spacing={4} align="start" w="full">
-                                    {mentor
-                                        ?.cards
-                                            ?.map(card => (
-                                                <Button
-                                                    key={card._id}
-                                                    onClick={() => setSelectedCard(card._id)}
-                                                    variant={selectedCard === card._id
-                                                    ? "solid"
-                                                    : "outline"}
-                                                    colorScheme={selectedCard === card._id
-                                                    ? "blue"
-                                                    : "gray"}
-                                                    w="full"
-                                                    h="82px">
-                                                    <Box textAlign="left" w="full">
-                                                        <Text fontWeight="bold">{card.name}</Text>
-                                                        <Text>{card.description}</Text>
-                                                        <Text>Price: {card.price}</Text>
-                                                        <Text>Time: {card.time}</Text>
-                                                    </Box>
-                                                </Button>
-                                            ))}
+                                    {mentor?.cards?.map(card => (
+                                        <Button
+                                            key={card._id}
+                                            onClick={() => setSelectedCard(card._id)}
+                                            variant={selectedCard === card._id ? "solid" : "outline"}
+                                            colorScheme={selectedCard === card._id ? "blue" : "gray"}
+                                            w="full"
+                                            minH="100px"
+                                            p={4}
+                                            borderRadius="xl"
+                                            border="2px solid"
+                                            borderColor={selectedCard === card._id ? "brand.500" : "gray.200"}
+                                            transition="all 0.3s"
+                                            _hover={{
+                                                transform: "translateY(-4px)",
+                                                boxShadow: "lg",
+                                                borderColor: "brand.400"
+                                            }}>
+                                            <VStack align="start" w="full" spacing={2}>
+                                                <Text fontWeight="700" fontSize="md">{card.name}</Text>
+                                                <Text fontSize="sm" color={selectedCard === card._id ? "white" : "gray.600"}>{card.description}</Text>
+                                                <HStack spacing={4} w="full" justify="space-between">
+                                                    <Text fontWeight="600" fontSize="sm">${card.price}</Text>
+                                                    <Text fontSize="sm" opacity={0.8}>{card.time}</Text>
+                                                </HStack>
+                                            </VStack>
+                                        </Button>
+                                    ))}
                                 </VStack>
                             </Box>
 
                         </Flex>
-                        <Button mt={6} colorScheme="blue" w="full" isDisabled={!selectedCard} onClick={scheduleAppointment}>
-                            Confirm
+                        <Button 
+                            mt={8} 
+                            colorScheme="blue" 
+                            w="full" 
+                            size="lg"
+                            borderRadius="xl"
+                            fontWeight="600"
+                            isDisabled={!selectedCard} 
+                            onClick={scheduleAppointment}
+                            _hover={{ transform: 'translateY(-2px)', boxShadow: 'xl' }}
+                            transition="all 0.2s">
+                            Confirm Appointment
                         </Button>
                     </VStack>
                 </Flex>

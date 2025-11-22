@@ -18,7 +18,8 @@ import {
     Stack,
     Divider,
     CardFooter,
-    ButtonGroup
+    ButtonGroup,
+    SimpleGrid
 } from '@chakra-ui/react';
 import {SearchIcon} from '@chakra-ui/icons';
 import {Link} from 'react-router-dom';
@@ -32,74 +33,141 @@ import axiosInstance from '../axios.config';
 
 const Home = () => {
     return (
-        <Box w="100%" p={4} textAlign="center" bg="background.50">
-            <Flex as="nav" p={4} alignItems="center">
-                <Image src={images['mentor-main.png']} alt="Mentoriaz Logo" boxSize="50px"/>
-                <Spacer/>
-                <HStack spacing={8} alignItems="center">
-                    <Box position="relative">
+        <Box w="100%" bg="white" position="relative" overflow="hidden">
+            {/* Hero Section with Gradient Background */}
+            <Box
+                bgGradient="linear(to-br, brand.50, blue.100, purple.50)"
+                position="relative"
+                pb={20}
+                pt={8}>
+                {/* Animated Background Elements */}
+                <Box
+                    position="absolute"
+                    top="-100px"
+                    right="-100px"
+                    w="400px"
+                    h="400px"
+                    borderRadius="full"
+                    bg="brand.200"
+                    opacity="0.3"
+                    filter="blur(80px)"
+                />
+                <Box
+                    position="absolute"
+                    bottom="-100px"
+                    left="-100px"
+                    w="400px"
+                    h="400px"
+                    borderRadius="full"
+                    bg="purple.200"
+                    opacity="0.3"
+                    filter="blur(80px)"
+                />
+
+                <Flex as="nav" p={6} alignItems="center" maxW="7xl" mx="auto">
+                    <Image src={images['mentor-main.png']} alt="Mentoriaz Logo" boxSize="50px" borderRadius="lg"/>
+                    <Spacer/>
+                    <HStack spacing={8} alignItems="center">
                         <Button
                             as={Link}
-                            to="/mentor-tap"
+                            to="/search-mentors"
                             variant="link"
-                            fontWeight="bold"
-                            color="darkBlue.500"
-                            className="topButton"
+                            fontWeight="600"
+                            color="gray.700"
                             _hover={{
-                            textDecoration: 'none'
-                        }}>
-                            Mentor Tap
+                                color: 'brand.500',
+                                textDecoration: 'none'
+                            }}>
+                            Find Mentors
                         </Button>
-                        <Box
-                            position="absolute"
-                            bottom="-2px"
-                            left="0"
-                            right="0"
-                            height="2px"
-                            bg="blue.500"
-                            borderRadius="full"/>
+                        <Button
+                            as={Link}
+                            to="/register"
+                            variant="link"
+                            fontWeight="600"
+                            color="gray.700"
+                            _hover={{
+                                color: 'brand.500',
+                                textDecoration: 'none'
+                            }}>
+                            Become a Mentor
+                        </Button>
+                    </HStack>
+                    <Spacer/>
+                    <HStack spacing={4}>
+                        <Button as={Link} to="/login" variant="ghost" fontWeight="600">
+                            Sign In
+                        </Button>
+                        <Button as={Link} to="/register" colorScheme="blue" fontWeight="600" px={6}>
+                            Get Started
+                        </Button>
+                    </HStack>
+                </Flex>
+
+                <VStack spacing={8} mt={16} mb={12} align="center" maxW="4xl" mx="auto" px={4} position="relative" zIndex={1}>
+                    <Box textAlign="center">
+                        <Text 
+                            fontSize="sm" 
+                            fontWeight="600" 
+                            color="brand.600" 
+                            mb={4}
+                            letterSpacing="0.1em"
+                            textTransform="uppercase">
+                            Connect • Grow • Succeed
+                        </Text>
+                        <Heading 
+                            as="h1" 
+                            fontSize={{ base: "4xl", md: "5xl", lg: "6xl" }}
+                            fontWeight="800"
+                            lineHeight="1.1"
+                            mb={6}
+                            bgGradient="linear(to-r, brand.600, brand.800)"
+                            bgClip="text">
+                            Find Your Perfect Mentor
+                        </Heading>
+                        <Text 
+                            fontSize={{ base: "lg", md: "xl" }} 
+                            color="gray.600" 
+                            maxW="2xl"
+                            lineHeight="1.6"
+                            mb={8}>
+                            Accelerate your career with personalized mentorship from industry experts. 
+                            Join thousands of professionals achieving their goals faster.
+                        </Text>
                     </Box>
-                    <Button
-                        as={Link}
-                        to="/mentor-ol"
-                        variant="link"
-                        fontWeight="bold"
-                        color="darkBlue.500"
-                        className="topButton"
-                        _hover={{
-                        textDecoration: 'none'
-                    }}>
-                        Mentor Ol
-                    </Button>
-                </HStack>
 
-                <Spacer/>
-                <Button as={Link} to="/login" colorScheme="blue">Daxil Ol</Button>
-            </Flex>
-
-            <VStack spacing={6} mt={10} align="center">
-                <Heading as="h1" size="2xl" color="blue.500">
-                    Mentoriaz'a Xoş Gəlmisiz!
-                </Heading>
-                <Text fontSize="xl" fontWeight="bold" color="black.500">
-                    Təcrübələr paylaşdıqca çoxalır
-                </Text>
-                <Text fontSize="md" color="gray.500" textAlign="center">
-                    Mentoriaz sizə karyeranızda kömək olmaq üçün yaradıldı
-                </Text>
-
-                <HStack spacing={2} mt={6} align="center" w="full" maxW="lg">
-                    <InputGroup size="lg" flex="1">
-                        <InputLeftElement
-                            pointerEvents="none"
-                            children={< SearchIcon color = "gray.500" />}/>
-                        <Input placeholder="Mentor axtar..." bg="white.500"/>
-                    </InputGroup>
-                    <Button colorScheme="blue" size="lg">
-                        Mentor Tap
-                    </Button>
-                </HStack>
-            </VStack>
+                    <HStack spacing={4} mt={6} w="full" maxW="2xl" flexDirection={{ base: "column", md: "row" }}>
+                        <InputGroup size="lg" flex="1">
+                            <InputLeftElement
+                                pointerEvents="none"
+                                children={<SearchIcon color="gray.400" />}/>
+                            <Input 
+                                placeholder="Search for mentors, skills, industries..." 
+                                bg="white"
+                                border="2px solid"
+                                borderColor="gray.200"
+                                borderRadius="xl"
+                                _focus={{
+                                    borderColor: 'brand.500',
+                                    boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)'
+                                }}
+                                _hover={{
+                                    borderColor: 'brand.300'
+                                }}
+                            />
+                        </InputGroup>
+                        <Button 
+                            colorScheme="blue" 
+                            size="lg" 
+                            px={8}
+                            borderRadius="xl"
+                            fontWeight="600"
+                            w={{ base: "full", md: "auto" }}>
+                            Search
+                        </Button>
+                    </HStack>
+                </VStack>
+            </Box>
             <Flex justifyContent="center" alignItems="center" mt={20} flexWrap="wrap">
                 <Box w="full" maxW="1200px">
                     <HStack spacing={8} mb={8} justify="center">
@@ -184,99 +252,237 @@ const Home = () => {
                     </HStack>
                 </Box>
             </Flex>
-            <Box mt={20} textAlign="center">
-                <Text fontSize="lg" color="gray.600">Kimlər üçündür?</Text>
-                <Heading as="h2" size="xl" mt={4} mb={6} fontWeight="bold">
-                    Uğur qazandıran planla karyeranı qur
-                </Heading>
-                <HStack spacing={4} justify="center" mb={10} flexWrap="wrap">
-                    <Button as={Link} to="/mentor-ol" bg="#4292fc"
-                        color="white" 
-                        border="none" 
-                        _hover={{
-                        bg: "#2381FF"
-                        
-                    }}
-                    >
-                        Karyera dəstəyi
-                    </Button>
-                    <Button as={Link} to="/mentor-ol" bg="#4292fc"
-                        color="white" 
-                        border="none" 
-                        _hover={{
-                        bg: "#2381FF"
-                        
-                    }}>Gələcəyini seç</Button>
-                    <Button as={Link} to="/mentor-ol" bg="#4292fc"
-                        color="white" 
-                        border="none" 
-                        _hover={{
-                        bg: "#2381FF"
-                        
-                    }}>Xaricdə işlə</Button>
-                    <Button as={Link} to="/mentor-ol" bg="#4292fc"
-                        color="white" 
-                        border="none" 
-                        _hover={{
-                        bg: "#2381FF"
-                        
-                    }}>Liderlər üçün mentorluq</Button>
-                    <Button as={Link} to="/mentor-ol" bg="#4292fc"
-                        color="white" 
-                        border="none" 
-                        _hover={{
-                        bg: "#2381FF"
-                        
-                    }}>Yeni karyeraya başla</Button>
-               
-                </HStack>
-                <Flex justifyContent="center" alignItems="center" spacing={8} flexWrap="wrap">
-                    <Box bg="white" p={6} rounded="md" shadow="sm" maxW="sm" textAlign="left" m={4}>
-                        <Image src={images['discover.svg']} objectFit="contain" alt="Discover Yourself" boxSize="300px"  textAlign="center" w="full" mb={4}/>
-                        <Heading as="h3" size="md" mb={2}>Potensialını kəşf et</Heading>
-                        <Text fontSize="sm" color="gray.600">
-                        Səviyyənizi qiymətləndirin və peşənizdə irəliləməyinizə kömək edəcək bacarıqları inkişaf etdirin.
+            {/* Features Section */}
+            <Box py={20} bg="white" maxW="7xl" mx="auto" px={4}>
+                <VStack spacing={12}>
+                    <Box textAlign="center" maxW="2xl">
+                        <Text fontSize="sm" fontWeight="600" color="brand.600" mb={3} letterSpacing="0.1em" textTransform="uppercase">
+                            Who It's For
+                        </Text>
+                        <Heading as="h2" fontSize={{ base: "3xl", md: "4xl" }} fontWeight="700" mb={4}>
+                            Build Your Career with a Winning Plan
+                        </Heading>
+                        <Text fontSize="lg" color="gray.600">
+                            Whether you're starting out or leveling up, find the perfect mentor for your journey
                         </Text>
                     </Box>
-                    <Box bg="white" p={6} rounded="md" shadow="sm" maxW="sm" textAlign="left" m={4}>
-                    <Image src={images['dsc2.jpeg']} objectFit="contain" alt="Discover Yourself" boxSize="300px" textAlign="center" w="full" mb={4}/>
-                    <Heading as="h3" size="md" mb={2}>Set Goals</Heading>
-                        <Text fontSize="sm" color="gray.600">
-                            Uzunmüddətli inkişaf planı yaradın və onu addım-addım izləyin, zənciri qırmadan.
-                        </Text>
-                    </Box>
-                    <Box bg="white" p={6} rounded="md" shadow="sm" maxW="sm" textAlign="left"  m={4}>
-                    <Image src={images['dsc.png']} objectFit="contain" alt="Discover Yourself" boxSize="300px" textAlign="center" w="full" mb={4}/>
-                    <Heading as="h3" size="md" mb={2}>Navigate Your Path</Heading>
-                        <Text fontSize="sm" color="gray.600">
-                            Karyeranızda inam qazanın və sahəsində öz yerinizi tapın.
-                        </Text>
-                    </Box>
-                </Flex>
+                    
+                    <HStack spacing={3} justify="center" mb={12} flexWrap="wrap" gap={3}>
+                        <Button 
+                            as={Link} 
+                            to="/register"
+                            bg="brand.500"
+                            color="white" 
+                            borderRadius="full"
+                            px={6}
+                            py={6}
+                            fontWeight="600"
+                            _hover={{
+                                bg: "brand.600",
+                                transform: "translateY(-2px)",
+                                boxShadow: "lg"
+                            }}
+                            transition="all 0.2s">
+                            Career Support
+                        </Button>
+                        <Button 
+                            as={Link} 
+                            to="/register"
+                            bg="brand.500"
+                            color="white" 
+                            borderRadius="full"
+                            px={6}
+                            py={6}
+                            fontWeight="600"
+                            _hover={{
+                                bg: "brand.600",
+                                transform: "translateY(-2px)",
+                                boxShadow: "lg"
+                            }}
+                            transition="all 0.2s">
+                            Choose Your Future
+                        </Button>
+                        <Button 
+                            as={Link} 
+                            to="/register"
+                            bg="brand.500"
+                            color="white" 
+                            borderRadius="full"
+                            px={6}
+                            py={6}
+                            fontWeight="600"
+                            _hover={{
+                                bg: "brand.600",
+                                transform: "translateY(-2px)",
+                                boxShadow: "lg"
+                            }}
+                            transition="all 0.2s">
+                            Work Abroad
+                        </Button>
+                        <Button 
+                            as={Link} 
+                            to="/register"
+                            bg="brand.500"
+                            color="white" 
+                            borderRadius="full"
+                            px={6}
+                            py={6}
+                            fontWeight="600"
+                            _hover={{
+                                bg: "brand.600",
+                                transform: "translateY(-2px)",
+                                boxShadow: "lg"
+                            }}
+                            transition="all 0.2s">
+                            Executive Mentoring
+                        </Button>
+                        <Button 
+                            as={Link} 
+                            to="/register"
+                            bg="brand.500"
+                            color="white" 
+                            borderRadius="full"
+                            px={6}
+                            py={6}
+                            fontWeight="600"
+                            _hover={{
+                                bg: "brand.600",
+                                transform: "translateY(-2px)",
+                                boxShadow: "lg"
+                            }}
+                            transition="all 0.2s">
+                            Career Switch
+                        </Button>
+                    </HStack>
+                    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={8} w="full" maxW="6xl">
+                        <Box 
+                            bg="white" 
+                            p={8} 
+                            borderRadius="2xl" 
+                            shadow="sm" 
+                            border="1px solid"
+                            borderColor="gray.200"
+                            textAlign="center"
+                            transition="all 0.3s"
+                            _hover={{
+                                shadow: "xl",
+                                transform: "translateY(-8px)",
+                                borderColor: "brand.200"
+                            }}>
+                            <Box 
+                                w="80px" 
+                                h="80px" 
+                                bg="brand.100" 
+                                borderRadius="xl" 
+                                display="flex" 
+                                alignItems="center" 
+                                justifyContent="center"
+                                mx="auto"
+                                mb={6}>
+                                <Text fontSize="3xl">🎯</Text>
+                            </Box>
+                            <Heading as="h3" size="lg" mb={3} fontWeight="700">Discover Your Potential</Heading>
+                            <Text fontSize="md" color="gray.600" lineHeight="1.7">
+                                Assess your level and develop skills that will help you advance in your profession.
+                            </Text>
+                        </Box>
+                        <Box 
+                            bg="white" 
+                            p={8} 
+                            borderRadius="2xl" 
+                            shadow="sm" 
+                            border="1px solid"
+                            borderColor="gray.200"
+                            textAlign="center"
+                            transition="all 0.3s"
+                            _hover={{
+                                shadow: "xl",
+                                transform: "translateY(-8px)",
+                                borderColor: "brand.200"
+                            }}>
+                            <Box 
+                                w="80px" 
+                                h="80px" 
+                                bg="purple.100" 
+                                borderRadius="xl" 
+                                display="flex" 
+                                alignItems="center" 
+                                justifyContent="center"
+                                mx="auto"
+                                mb={6}>
+                                <Text fontSize="3xl">📈</Text>
+                            </Box>
+                            <Heading as="h3" size="lg" mb={3} fontWeight="700">Set Goals</Heading>
+                            <Text fontSize="md" color="gray.600" lineHeight="1.7">
+                                Create a long-term development plan and follow it step by step, maintaining consistency.
+                            </Text>
+                        </Box>
+                        <Box 
+                            bg="white" 
+                            p={8} 
+                            borderRadius="2xl" 
+                            shadow="sm" 
+                            border="1px solid"
+                            borderColor="gray.200"
+                            textAlign="center"
+                            transition="all 0.3s"
+                            _hover={{
+                                shadow: "xl",
+                                transform: "translateY(-8px)",
+                                borderColor: "brand.200"
+                            }}>
+                            <Box 
+                                w="80px" 
+                                h="80px" 
+                                bg="green.100" 
+                                borderRadius="xl" 
+                                display="flex" 
+                                alignItems="center" 
+                                justifyContent="center"
+                                mx="auto"
+                                mb={6}>
+                                <Text fontSize="3xl">🚀</Text>
+                            </Box>
+                            <Heading as="h3" size="lg" mb={3} fontWeight="700">Navigate Your Path</Heading>
+                            <Text fontSize="md" color="gray.600" lineHeight="1.7">
+                                Build confidence in your career and find your place in your field.
+                            </Text>
+                        </Box>
+                    </SimpleGrid>
+                </VStack>
             </Box>
 
-            <Box mt={20} textAlign="center">
-                <Text fontSize="lg" color="gray.600">Mentoriaz necə çalışır?</Text>
-                <Heading as="h2" size="xl" mt={4} mb={6} fontWeight="bold">
-                    Seçdiyiniz karyeranıza əsasən bir mentora müraciət edin
-                </Heading>
+            {/* How It Works Section */}
+            <Box py={20} bg="gray.50" maxW="7xl" mx="auto" px={4}>
+                <VStack spacing={12}>
+                    <Box textAlign="center" maxW="2xl">
+                        <Text fontSize="sm" fontWeight="600" color="brand.600" mb={3} letterSpacing="0.1em" textTransform="uppercase">
+                            How It Works
+                        </Text>
+                        <Heading as="h2" fontSize={{ base: "3xl", md: "4xl" }} fontWeight="700" mb={4}>
+                            Get Started in 4 Simple Steps
+                        </Heading>
+                        <Text fontSize="lg" color="gray.600">
+                            Find the perfect mentor based on your chosen career path
+                        </Text>
+                    </Box>
                 <HStack spacing={8} justify="center" mb={10} flexWrap="wrap">
                     {[
                         {
                             image: images['logo2.png'],
-                            title: 'Hədəfini seç',
-                            description: 'Məqsədini seçərək uyğun mentor tap və inkişafını planla.'
+                            title: 'Choose Your Goal',
+                            description: 'Select your objective and find the right mentor to plan your growth.'
                         }, {
                             image: images['logo3.png'],
-                            title: 'Mentorunu tap',
-                            description: 'Karyera inkişafını dəstəkləyəcək ideal mentorunu tap.'
+                            title: 'Find Your Mentor',
+                            description: 'Discover the ideal mentor who will support your career development.'
                         }, {
                             image: images['cal.png'],
-                            title: 'Görüş yarat',
-                            description: 'Mentorunla görüş təyin edərək inkişafını dəstəklə.'
+                            title: 'Schedule a Session',
+                            description: 'Book a session with your mentor and accelerate your growth.'
                         }, {
                             image: images['cal2.png'],
-                            title: 'İnkişaf et',
+                            title: 'Grow & Succeed',
                             description: 'İnkişafına kömək edəcək güclü və dəstəkl��yici resurslarla tanış ol.'
                         }
                     ].map((item, idx) => (
@@ -291,7 +497,7 @@ const Home = () => {
                         </Card>
                     ))}
                 </HStack>
-
+                </VStack>
             </Box>
             <FindMentorSection/>
             <FAQSection/>

@@ -3,6 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { getApiUrl } from '../utils/apiConfig';
 
 // Firebase yapılandırma
 const firebaseConfig = {
@@ -28,7 +29,7 @@ const signInWithGoogle = async (isMentor, navigate, toast) => {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
 
-    const response = await fetch('http://localhost:5000/api/auth/google-register', {
+    const response = await fetch(getApiUrl('/api/auth/google-register'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

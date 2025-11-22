@@ -46,6 +46,7 @@ import images from '../helpers/imageLoader';
 import Header from '../components/Header';
 import EditCardModal from '../components/EditCardModal';
 import MentorAppointments from '../components/MentorAppointments';
+import { getApiUrl, getImageUrl } from '../utils/apiConfig';
 
 const Profile = ({currentUserId}) => {
     const toast = useToast();
@@ -82,7 +83,7 @@ const Profile = ({currentUserId}) => {
         const fetchProfile = async() => {
             try {
                 setIsLoading(true);
-                const response = await fetch(`http://localhost:5000/api/profile/${userId}`);
+                const response = await fetch(getApiUrl(`/api/profile/${userId}`));
                 const data = await response.json();
                 setProfile(data);
             } catch (error) {
@@ -99,7 +100,7 @@ const Profile = ({currentUserId}) => {
         const fetchReviews = async() => {
             try {
                 setIsLoading(true);
-                const response = await fetch(`http://localhost:5000/api/reviews/${userId}`);
+                const response = await fetch(getApiUrl(`/api/reviews/${userId}`));
                 const data = await response.json();
                 setReviews(data);
                 setFilteredReviews(data);
@@ -129,7 +130,7 @@ const Profile = ({currentUserId}) => {
         setShowBadgeMessage(true);
         toast({
            
-            title: 'Ən çox 4 paket əlavə edilə bilər',
+            title: 'Maximum 4 packages allowed',
             status: 'info',
             duration: 5000,
             color:"white",
@@ -145,7 +146,7 @@ const Profile = ({currentUserId}) => {
                     fontWeight: 'bolder'
                 }}>
                     <Icon as={InfoIcon} color="white" marginRight="8px" />
-                    Ən çox 4 paket əlavə edilə bilər
+                    Maximum 4 packages allowed
                 </div>
             ),
             isClosable: true
@@ -154,7 +155,7 @@ const Profile = ({currentUserId}) => {
     
 
     const handleDeleteCard = async (id) => {
-        const response = await fetch(`http://localhost:5000/api/user/card/${id}`, {
+        const response = await fetch(getApiUrl(`/api/user/card/${id}`), {
           method: 'DELETE',
         });
     
@@ -165,7 +166,7 @@ const Profile = ({currentUserId}) => {
         }
       };
       const handleUpdateCard = async (id, updatedCard) => {
-        const response = await fetch(`http://localhost:5000/api/admin/profiles/card/${id}`, {
+        const response = await fetch(getApiUrl(`/api/admin/profiles/card/${id}`), {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -188,7 +189,7 @@ const Profile = ({currentUserId}) => {
         setIsLoading(true);
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-            const response = await fetch('http://localhost:5000/api/profile', {
+            const response = await fetch(getApiUrl('/api/profile'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -243,7 +244,7 @@ const handleVerifyProfile = () => {
         
         try {
             setIsLoading(true);
-            const response = await fetch(`http://localhost:5000/api/reviews/${userId}`, {
+            const response = await fetch(getApiUrl(`/api/reviews/${userId}`), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -281,7 +282,7 @@ const handleVerifyProfile = () => {
     const handleDeleteReview = async(reviewId) => {
         try {
             setIsLoading(true);
-            const response = await fetch(`http://localhost:5000/api/reviews/${reviewId}`, {
+            const response = await fetch(getApiUrl(`/api/reviews/${reviewId}`), {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -309,9 +310,7 @@ const handleVerifyProfile = () => {
     };
 
     const bannerPhotoPath = profile.bannerPhoto
-        ? `http://localhost:5000${profile
-            .bannerPhoto
-            .replace(/\\/g, '/')}`
+        ? getImageUrl(profile.bannerPhoto.replace(/\\/g, '/'))
         : `https://www.pixelstalk.net/wp-content/uploads/2016/08/Background-Images-Full-HD-Wallpapers.jpg`;
 
     const isCurrentUser = currentUser._id === profile.user._id;
@@ -340,7 +339,7 @@ const handleVerifyProfile = () => {
                     px={4}>
                     <Avatar
                         src={profile.photo
-                        ? `http://localhost:5000${profile.photo}`
+                        ? getImageUrl(profile.photo)
                         : `https://cdn-icons-png.freepik.com/512/147/147142.png`}
                         alt="Profile Photo"
                         size="2xl"
@@ -405,7 +404,7 @@ const handleVerifyProfile = () => {
                             alignSelf={{
                             md: 'flex-start'
                         }}>
-                            Profili təsdiqlə
+                            Verify Profile
                         </Button>
                             )
                         }
@@ -419,7 +418,7 @@ const handleVerifyProfile = () => {
                             base: 'center',
                             md: 'flex-start'
                         }}>
-                            Məlumatları dəyiş
+                            Edit Profile
                         </Button>
                         </>
                     )}
@@ -436,7 +435,7 @@ const handleVerifyProfile = () => {
                             alignSelf={{
                             md: 'flex-start'
                         }}>
-                            Görüşmə yarat
+                            Schedule Meeting
                         </Button>
                        
                     )}
@@ -452,15 +451,15 @@ const handleVerifyProfile = () => {
                     <VStack flex="3" spacing={4} align="start">
                         <Tabs variant="enclosed" width="100%">
                             <TabList>
-                                <Tab>Məlumatlar</Tab>
-                                <Tab>{profile.isMentor
-                                        ? 'Dəyərləndirmələr'
-                                        : 'Mentorlarım'}</Tab>
+                                <Tab fontWeight="600">About</Tab>
+                                <Tab fontWeight="600">{profile.isMentor
+                                        ? 'Reviews'
+                                        : 'My Mentors'}</Tab>
                                 {profile.isMentor
-                                    ? <Tab>Paketlər</Tab>
+                                    ? <Tab fontWeight="600">Packages</Tab>
                                     : null}
                                 {profile.isMentor && isCurrentUser
-                                    ? <Tab>Görüş istəkləri</Tab>
+                                    ? <Tab fontWeight="600">Appointments</Tab>
                                     : null}
                             </TabList>
                             <TabPanels>
@@ -535,31 +534,45 @@ const handleVerifyProfile = () => {
                         <>
         
                         {isMaxCards ? (
-                            <Button colorScheme="gray" mb={2} onClick={handleShowBadgeMessage}>Paket Əlavə et</Button>
+                            <Button 
+                                colorScheme="gray" 
+                                mb={2} 
+                                onClick={handleShowBadgeMessage}
+                                borderRadius="xl"
+                                fontWeight="600">
+                                Add Package
+                            </Button>
                         )
                         :
-                        <Button colorScheme="blue" mb={2} onClick={onOpen}>Paket Əlavə et</Button>}
-                        <Modal isOpen={isOpen} onClose={onClose}>
-                            <ModalOverlay />
-                            <ModalContent bg="white">
-                            <ModalHeader>Yeni Paket Əlavə et</ModalHeader>
+                        <Button 
+                            colorScheme="blue" 
+                            mb={2} 
+                            onClick={onOpen}
+                            borderRadius="xl"
+                            fontWeight="600">
+                            Add Package
+                        </Button>}
+                        <Modal isOpen={isOpen} onClose={onClose} size="xl">
+                            <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(10px)" />
+                            <ModalContent bg="white" borderRadius="2xl">
+                            <ModalHeader fontWeight="700">Add New Package</ModalHeader>
                             <ModalCloseButton />
                             <ModalBody>
                                 <VStack spacing={4}>
                                     <Input 
-                                    placeholder="Paket adı"
+                                    placeholder="Package name"
                                     name="name"
                                     value={newCard.name}
                                     onChange={handleCardInputChange}
                                     />
                                     <Textarea 
-                                    placeholder="Paket təsviri"
+                                    placeholder="Package description"
                                     name="description"
                                     value={newCard.description}
                                     onChange={handleCardInputChange}
                                     />
                                     <NumberInput 
-                                    placeholder="Qiymət"
+                                    placeholder="Price"
                                     name="price"
                                     value={newCard.price}
                                     onChange={handleNumberInputChange}
@@ -578,9 +591,15 @@ const handleVerifyProfile = () => {
                             </ModalBody>
                             <ModalFooter>
                                 <Button colorScheme="blue" mr={3} onClick={handleAddCard}>
-                                    Əlavə et
+                                    Add Package
                                 </Button>
-                                <Button variant="ghost" onClick={onClose}>Bağla</Button>
+                                <Button 
+                                    variant="ghost" 
+                                    onClick={onClose}
+                                    borderRadius="xl"
+                                    fontWeight="600">
+                                    Cancel
+                                </Button>
                             </ModalFooter>
                             </ModalContent>
                         </Modal>
@@ -589,7 +608,7 @@ const handleVerifyProfile = () => {
                     {profile.cards.length === 0 ? (
                         <>
                             <Heading textAlign="center" size="lg">
-                                Hələki Mentor heçbir paket əlavə etməyib
+                                No packages added yet
                             </Heading>
                             <Box
                                 mx="auto"

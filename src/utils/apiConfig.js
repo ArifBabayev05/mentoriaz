@@ -1,8 +1,46 @@
-export const API_BASE_URL = process.env.REACT_APP_API_URL;
+// Get API base URL with fallback to proxy or default
+export const getApiBaseUrl = () => {
+  // Use environment variable if available
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  // Fallback to proxy (for development)
+  return '';
+};
+
+export const API_BASE_URL = getApiBaseUrl();
+
+// Helper function to build full API URL
+export const getApiUrl = (endpoint) => {
+  if (!endpoint) return '';
+  // If endpoint already includes full URL, return as is
+  if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+    return endpoint;
+  }
+  // Ensure endpoint starts with /
+  const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  // If API_BASE_URL is empty, use relative path (proxy will handle it)
+  if (!API_BASE_URL) {
+    return normalizedEndpoint;
+  }
+  // Ensure API_BASE_URL doesn't end with /
+  const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+  return `${baseUrl}${normalizedEndpoint}`;
+};
 
 export const getImageUrl = (path) => {
   if (!path) return '';
-  return `${API_BASE_URL}${path}`;
+  // If path already includes full URL, return as is
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  // If API_BASE_URL is empty, path should already be relative from server
+  if (!API_BASE_URL) {
+    return path;
+  }
+  // Ensure API_BASE_URL doesn't end with /
+  const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+  return `${baseUrl}${path}`;
 };
 
 export const ENDPOINTS = {

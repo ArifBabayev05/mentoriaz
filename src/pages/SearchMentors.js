@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, FormControl, FormLabel, Input, VStack, List, ListItem, Text, HStack } from '@chakra-ui/react';
 import { useLoading } from '../helpers/loadingContext';
+import { getApiUrl } from '../utils/apiConfig';
 
 const SearchMentors = () => {
   const [search, setSearch] = useState('');
@@ -10,12 +11,15 @@ const SearchMentors = () => {
   const {setIsLoading} = useLoading();
 
   const searchMentors = async () => {
-    setIsLoading(true)
-    const response = await fetch(`http://localhost:5000/api/mentors/search?search=${search}`);
-    const data = await response.json();
-    setMentors(data);
-
-    if(response.ok){
+    setIsLoading(true);
+    try {
+      const response = await fetch(getApiUrl(`/api/mentors/search?search=${encodeURIComponent(search)}`));
+      if (!response.ok) throw new Error('Search failed');
+      const data = await response.json();
+      setMentors(data);
+    } catch (error) {
+      console.error('Error searching mentors:', error);
+    } finally {
       setIsLoading(false);
     }
   };

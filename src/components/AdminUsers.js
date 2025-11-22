@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Heading, Button, Table, Thead, Tbody, Tr, Th, Td, useToast } from '@chakra-ui/react';
+import { getApiUrl } from '../utils/apiConfig';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -7,7 +8,7 @@ const AdminUsers = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const response = await fetch('http://localhost:5000/api/admin/users');
+      const response = await fetch(getApiUrl('/api/admin/users'));
       const data = await response.json();
       setUsers(data);
     };
@@ -16,7 +17,7 @@ const AdminUsers = () => {
   }, []);
 
   const deleteUser = async (id) => {
-    const response = await fetch(`http://localhost:5000/api/admin/users/${id}`, {
+    const response = await fetch(getApiUrl(`/api/admin/users/${id}`), {
       method: 'DELETE'
     });
     if (response.ok) {

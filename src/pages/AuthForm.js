@@ -17,6 +17,7 @@ import {
   Flex,
   Image,
   Heading,
+  Text,
   Divider,
   AbsoluteCenter
 } from '@chakra-ui/react';
@@ -24,6 +25,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import images from '../helpers/imageLoader';
 import { signInWithGoogle } from '../helpers/firebaseConfig';
+import { getApiUrl } from '../utils/apiConfig';
 
 const AuthForm = () => {
 
@@ -47,7 +49,7 @@ const AuthForm = () => {
     const fullName = `${form.name} ${form.surname}`;
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch(getApiUrl('/api/auth/register'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +80,7 @@ const AuthForm = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(getApiUrl('/api/auth/login'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -105,37 +107,77 @@ const AuthForm = () => {
       minH="100vh"
       align="center"
       justify="center"
-      bgImage={`url(${images['background.png']})`}
-      bgSize="cover"
-      bgPosition="center"
+      bgGradient="linear(to-br, brand.50, blue.100, purple.50)"
+      position="relative"
+      overflow="hidden"
       p={4}>
+      {/* Animated Background Elements */}
+      <Box
+        position="absolute"
+        top="-100px"
+        right="-100px"
+        w="400px"
+        h="400px"
+        borderRadius="full"
+        bg="brand.200"
+        opacity="0.3"
+        filter="blur(80px)"
+      />
+      <Box
+        position="absolute"
+        bottom="-100px"
+        left="-100px"
+        w="400px"
+        h="400px"
+        borderRadius="full"
+        bg="purple.200"
+        opacity="0.3"
+        filter="blur(80px)"
+      />
       <ToastContainer />
       <Box
-        bg="white"
-        p={6}
-        rounded="lg"
-        shadow="lg"
+        bg="rgba(255, 255, 255, 0.95)"
+        backdropFilter="blur(20px)"
+        p={8}
+        rounded="2xl"
+        shadow="2xl"
+        border="1px solid"
+        borderColor="rgba(255, 255, 255, 0.8)"
         maxW={{
-          base: '90%',
-          sm: '70%',
-          md: '50%',
-          lg: '35%'
+          base: '95%',
+          sm: '90%',
+          md: '500px',
+          lg: '480px'
         }}
-        width="100%">
+        width="100%"
+        position="relative"
+        zIndex={1}>
         <VStack spacing={6} align="stretch">
-          <Image
-            src={images['mentor-main.png']}
-            alt="Mentoriaz Logo"
-            boxSize="100px"
-            mx="auto" />
-          <Heading as="h2" size="xl" textAlign="center">
-            Mentoriaz
-          </Heading>
-          <Tabs isFitted variant="enclosed">
+          <VStack spacing={3} mb={4}>
+            <Image
+              src={images['mentor-main.png']}
+              alt="Mentoriaz Logo"
+              boxSize="80px"
+              mx="auto"
+              borderRadius="xl" />
+            <Heading 
+              as="h2" 
+              size="xl" 
+              textAlign="center"
+              bgGradient="linear(to-r, brand.600, brand.800)"
+              bgClip="text"
+              fontWeight="800">
+              Welcome to Mentoriaz
+            </Heading>
+            <Text fontSize="sm" color="gray.600" textAlign="center">
+              Connect with expert mentors and accelerate your career
+            </Text>
+          </VStack>
+          <Tabs isFitted variant="enclosed" colorScheme="blue">
             <TabList mb="1em">
-              <Tab>İstifadəçi qeydiyyatı</Tab>
-              <Tab>Mentor qeydiyyatı</Tab>
-              <Tab>Daxil ol</Tab>
+              <Tab fontWeight="600">User Registration</Tab>
+              <Tab fontWeight="600">Mentor Registration</Tab>
+              <Tab fontWeight="600">Sign In</Tab>
             </TabList>
             <TabPanels>
               <TabPanel>
@@ -147,22 +189,22 @@ const AuthForm = () => {
                       width="full"
                       onClick={() => signInWithGoogle(false, navigate, toast)}
                       leftIcon={<FcGoogle />}>
-                      Google ilə qeydiyyatdan keçin
+                      Sign up with Google
                     </Button>
 
                     <Box position='relative' padding='5'>
                       <Divider />
                       <AbsoluteCenter bg='white' px='4'>
-                        Və ya
+                        Or
                       </AbsoluteCenter>
                     </Box>
                     <FormControl id="user_name" isRequired>
-                      <FormLabel>Ad</FormLabel>
+                      <FormLabel>First Name</FormLabel>
                       <Input type="text" value={userForm.name} onChange={(e) => handleChange('user', 'name', e.target.value)} />
                     </FormControl>
 
                     <FormControl id="user_surname" isRequired>
-                      <FormLabel>Soyad</FormLabel>
+                      <FormLabel>Last Name</FormLabel>
                       <Input
                         type="text"
                         value={userForm.surname}
@@ -175,7 +217,7 @@ const AuthForm = () => {
                     </FormControl>
 
                     <FormControl id="user_password" isRequired>
-                      <FormLabel>Şifrə</FormLabel>
+                      <FormLabel>Password</FormLabel>
                       <Input
                         type="password"
                         value={userForm.password}
@@ -183,7 +225,7 @@ const AuthForm = () => {
                     </FormControl>
 
                     <Button type='submit' colorScheme="blue" width="full">
-                      İstifadəçi kimi Qeydiyyatdan keçin
+                      Sign Up as User
                     </Button>
                   </VStack>
                 </form>
@@ -193,48 +235,92 @@ const AuthForm = () => {
                   <VStack spacing={4} align="stretch">
                     <Button
                       variant="outline"
-                      colorScheme="red"
+                      colorScheme="gray"
                       width="full"
+                      size="lg"
+                      borderRadius="xl"
+                      fontWeight="600"
                       onClick={() => signInWithGoogle(true, navigate, toast)}
-                      leftIcon={<FcGoogle />}>
-                      Google ilə qeydiyyatdan keçin
+                      leftIcon={<FcGoogle />}
+                      _hover={{ bg: 'gray.50', transform: 'translateY(-2px)' }}
+                      transition="all 0.2s">
+                      Sign up with Google
                     </Button>
 
                     <Box position='relative' padding='5'>
                       <Divider />
                       <AbsoluteCenter bg='white' px='4'>
-                        Və ya
+                        Or
                       </AbsoluteCenter>
                     </Box>
 
                     <FormControl id="mentor_name" isRequired>
-                      <FormLabel>Ad</FormLabel>
-                      <Input type="text" value={mentorForm.name} onChange={(e) => handleChange('mentor', 'name', e.target.value)} />
+                      <FormLabel fontWeight="600">First Name</FormLabel>
+                      <Input 
+                        type="text" 
+                        value={mentorForm.name} 
+                        onChange={(e) => handleChange('mentor', 'name', e.target.value)}
+                        borderRadius="lg"
+                        border="2px solid"
+                        borderColor="gray.200"
+                        _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)' }}
+                        _hover={{ borderColor: 'brand.300' }}
+                      />
                     </FormControl>
 
                     <FormControl id="mentor_surname" isRequired>
-                      <FormLabel>Soyad</FormLabel>
+                      <FormLabel fontWeight="600">Last Name</FormLabel>
                       <Input
                         type="text"
                         value={mentorForm.surname}
-                        onChange={(e) => handleChange('mentor', 'surname', e.target.value)} />
+                        onChange={(e) => handleChange('mentor', 'surname', e.target.value)}
+                        borderRadius="lg"
+                        border="2px solid"
+                        borderColor="gray.200"
+                        _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)' }}
+                        _hover={{ borderColor: 'brand.300' }}
+                      />
                     </FormControl>
 
                     <FormControl id="mentor_email" isRequired>
-                      <FormLabel>Email</FormLabel>
-                      <Input type="email" value={mentorForm.email} onChange={(e) => handleChange('mentor', 'email', e.target.value)} />
+                      <FormLabel fontWeight="600">Email</FormLabel>
+                      <Input 
+                        type="email" 
+                        value={mentorForm.email} 
+                        onChange={(e) => handleChange('mentor', 'email', e.target.value)}
+                        borderRadius="lg"
+                        border="2px solid"
+                        borderColor="gray.200"
+                        _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)' }}
+                        _hover={{ borderColor: 'brand.300' }}
+                      />
                     </FormControl>
 
                     <FormControl id="mentor_password" isRequired>
-                      <FormLabel>Şifrə</FormLabel>
+                      <FormLabel fontWeight="600">Password</FormLabel>
                       <Input
                         type="password"
                         value={mentorForm.password}
-                        onChange={(e) => handleChange('mentor', 'password', e.target.value)} />
+                        onChange={(e) => handleChange('mentor', 'password', e.target.value)}
+                        borderRadius="lg"
+                        border="2px solid"
+                        borderColor="gray.200"
+                        _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)' }}
+                        _hover={{ borderColor: 'brand.300' }}
+                      />
                     </FormControl>
 
-                    <Button type='submit' colorScheme="blue" width="full">
-                      Mentor kimi Qeydiyyatdan keçin
+                    <Button 
+                      type='submit' 
+                      colorScheme="blue" 
+                      width="full"
+                      size="lg"
+                      borderRadius="xl"
+                      fontWeight="600"
+                      mt={2}
+                      _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
+                      transition="all 0.2s">
+                      Sign Up as Mentor
                     </Button>
                   </VStack>
                 </form>
@@ -243,23 +329,56 @@ const AuthForm = () => {
                 <form onSubmit={submitLoginHandler}>
                   <VStack spacing={4} align="stretch">
                     <FormControl id="login_email" isRequired>
-                      <FormLabel>Email</FormLabel>
-                      <Input type="email" value={loginForm.email} onChange={(e) => handleChange('login', 'email', e.target.value)} />
+                      <FormLabel fontWeight="600">Email</FormLabel>
+                      <Input 
+                        type="email" 
+                        value={loginForm.email} 
+                        onChange={(e) => handleChange('login', 'email', e.target.value)}
+                        borderRadius="lg"
+                        border="2px solid"
+                        borderColor="gray.200"
+                        _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)' }}
+                        _hover={{ borderColor: 'brand.300' }}
+                      />
                     </FormControl>
 
                     <FormControl id="login_password" isRequired>
-                      <FormLabel>Şifrə</FormLabel>
+                      <FormLabel fontWeight="600">Password</FormLabel>
                       <Input
                         type="password"
                         value={loginForm.password}
-                        onChange={(e) => handleChange('login', 'password', e.target.value)} />
+                        onChange={(e) => handleChange('login', 'password', e.target.value)}
+                        borderRadius="lg"
+                        border="2px solid"
+                        borderColor="gray.200"
+                        _focus={{ borderColor: 'brand.500', boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)' }}
+                        _hover={{ borderColor: 'brand.300' }}
+                      />
                     </FormControl>
 
-                    <Button type="submit" colorScheme="teal" width="full">
-                      Daxil olun
+                    <Button 
+                      type="submit" 
+                      colorScheme="blue" 
+                      width="full"
+                      size="lg"
+                      borderRadius="xl"
+                      fontWeight="600"
+                      _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
+                      transition="all 0.2s">
+                      Sign In
                     </Button>
-                    <Button variant="outline" colorScheme="red" width="full" onClick={() => signInWithGoogle(false, navigate, toast)} leftIcon={<FcGoogle />}>
-                      Google ilə daxil olun
+                    <Button 
+                      variant="outline" 
+                      colorScheme="gray" 
+                      width="full" 
+                      size="lg"
+                      borderRadius="xl"
+                      fontWeight="600"
+                      onClick={() => signInWithGoogle(false, navigate, toast)} 
+                      leftIcon={<FcGoogle />}
+                      _hover={{ bg: 'gray.50', transform: 'translateY(-2px)' }}
+                      transition="all 0.2s">
+                      Sign in with Google
                     </Button>
                   </VStack>
                 </form>

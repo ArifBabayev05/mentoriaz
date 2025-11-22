@@ -12,19 +12,18 @@ const Footer = () => {
             <Image src={images['mentor-main.png']} alt="Mentoriaz Logo" boxSize="50px" />
             <Text fontSize="1xl" fontWeight="bold">Mentoriaz</Text>
           </HStack>
-          <Text fontSize="md" color="gray.600">Mentee is a unique mentoring platform where your goals become a reality</Text>
-          <Button colorScheme="blue">Mentor axtar →</Button>
+          <Text fontSize="md" color="gray.600">A unique mentoring platform where your goals become a reality</Text>
+          <Button colorScheme="blue" fontWeight="600">Find a Mentor →</Button>
         </VStack>
         <VStack align="start" spacing={4} flex="1" mb={{ base: 8, md: 0 }}>
-          <Text fontSize="lg" fontWeight="bold">Xidmətlər</Text>
-          <Link href="#">Mentor axtar</Link>
-          <Link href="#">Mentor ol</Link>
+          <Text fontSize="lg" fontWeight="700">Services</Text>
+          <Link href="#" color="gray.600" _hover={{ color: 'brand.500' }}>Find a Mentor</Link>
+          <Link href="#" color="gray.600" _hover={{ color: 'brand.500' }}>Become a Mentor</Link>
         </VStack>
         <VStack align="start" spacing={4} flex="1" mb={{ base: 8, md: 0 }}>
-          <Text fontSize="lg" fontWeight="bold">Əlaqə</Text>
-          {/* <Link href="#">Reviews</Link> */}
-          <Link href="#">FAQ</Link>
-          <Link href="#">Dəstək xidməti</Link>
+          <Text fontSize="lg" fontWeight="700">Contact</Text>
+          <Link href="#" color="gray.600" _hover={{ color: 'brand.500' }}>FAQ</Link>
+          <Link href="#" color="gray.600" _hover={{ color: 'brand.500' }}>Support</Link>
         </VStack>
         <HStack spacing={4} flex="1" justify={{ base: 'center', md: 'start' }}>
           <IconButton as={Link} href="#" icon={<EmailIcon />} isRound="true" size="lg" aria-label="Email" />

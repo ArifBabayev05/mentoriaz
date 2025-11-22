@@ -11,18 +11,26 @@ import {
   Heading,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
+import { getApiUrl } from '../utils/apiConfig';
 
 const MyMentors = ({ currentUser }) => {
   const [mentors, setMentors] = useState([]);
 
   useEffect(() => {
     const fetchMentors = async () => {
-      const response = await fetch(`http://localhost:5000/api/users/${currentUser._id}/mentors`);
-      const data = await response.json();
-      setMentors(data);
+      try {
+        const response = await fetch(getApiUrl(`/api/users/${currentUser._id}/mentors`));
+        if (!response.ok) throw new Error('Failed to fetch mentors');
+        const data = await response.json();
+        setMentors(data);
+      } catch (error) {
+        console.error('Error fetching mentors:', error);
+      }
     };
 
-    fetchMentors();
+    if (currentUser?._id) {
+      fetchMentors();
+    }
   }, [currentUser]);
 
   return (

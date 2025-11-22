@@ -10,7 +10,6 @@ import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import SearchMentors from './pages/SearchMentors';
 import ScheduleAppointment from './pages/ScheduleAppointment';
-import Payment from './pages/Payment';
 import ComplaintForm from './pages/ComplaintForm';
 import Footer from './components/Footer';
 import AuthForm from './pages/AuthForm';
@@ -18,8 +17,6 @@ import Header from './components/Header';
 import UserHomePage from './pages/UserHomePage';
 import MentorSearch from './pages/MentorSearch';
 import AdminDashboard from './pages/AdminDashboard';
-import VideoMeetingPage from './pages/Meeting';
-import Meeting from './pages/Meeting';
 import LoadingPage from './components/LoadingPage'; 
 import { LoadingProvider, useLoading } from './helpers/loadingContext'; 
 import VerifyProfile from './pages/VerifyProfile';
@@ -28,36 +25,82 @@ const AppContent = () => {
   const { isLoading } = useLoading();
   const userInfo = localStorage.getItem("userInfo");
 
+  // Routes that don't need Header/Footer
+  const publicRoutes = ['/', '/login', '/register'];
+  
   return (
     <>
       {isLoading && <LoadingPage />}
       <Routes>
+        {/* Public routes without header/footer */}
         <Route path="/login" element={userInfo ? <Navigate to={`/user-home-page`} replace /> : <AuthForm />} />
         <Route path="/register" element={userInfo ? <Navigate to={`/user-home-page`} replace /> : <AuthForm />} />
-
         <Route path="/" element={userInfo ? <Navigate to={`/user-home-page`} replace /> : <Home />} />
-        <Route
-          path="*"
-          element={
-            <>
-              <Header />
-              <Routes>
-                <Route path="/admin-dashboard" element={<AdminDashboard />} />
-                <Route path="/user-home-page" element={<UserHomePage />} />
-                <Route path="/profile/:userId" element={<Profile />} />
-                <Route path="/edit-profile/:userId" element={<EditProfile />} />
-                <Route path="/verify-profile/:userId" element={<VerifyProfile />} />
-                <Route path="/schedule-appointment/:mentorId" element={<ScheduleAppointment />} />
-                <Route path="/complaint" element={<ComplaintForm />} />
-                <Route path="/payment" element={<Payment />} />
-                <Route path="/search-mentors" element={<MentorSearch />} />
-                <Route path="*" element={<NotFound />} />
-
-              </Routes>
-              <Footer />
-            </>
-          }
-        />
+        
+        {/* Protected routes with header/footer */}
+        <Route path="/admin-dashboard" element={
+          <>
+            <Header />
+            <AdminDashboard />
+            <Footer />
+          </>
+        } />
+        <Route path="/user-home-page" element={
+          <>
+            <Header />
+            <UserHomePage />
+            <Footer />
+          </>
+        } />
+        <Route path="/profile/:userId" element={
+          <>
+            <Header />
+            <Profile />
+            <Footer />
+          </>
+        } />
+        <Route path="/edit-profile/:userId" element={
+          <>
+            <Header />
+            <EditProfile />
+            <Footer />
+          </>
+        } />
+        <Route path="/verify-profile/:userId" element={
+          <>
+            <Header />
+            <VerifyProfile />
+            <Footer />
+          </>
+        } />
+        <Route path="/schedule-appointment/:mentorId" element={
+          <>
+            <Header />
+            <ScheduleAppointment />
+            <Footer />
+          </>
+        } />
+        <Route path="/complaint" element={
+          <>
+            <Header />
+            <ComplaintForm />
+            <Footer />
+          </>
+        } />
+        <Route path="/search-mentors" element={
+          <>
+            <Header />
+            <MentorSearch />
+            <Footer />
+          </>
+        } />
+        <Route path="*" element={
+          <>
+            <Header />
+            <NotFound />
+            <Footer />
+          </>
+        } />
       </Routes>
     </>
   );

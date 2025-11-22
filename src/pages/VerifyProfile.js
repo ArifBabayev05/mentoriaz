@@ -11,11 +11,11 @@ import {
     VStack,
     HStack,
     IconButton,
-    Text,
     Image
 } from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import { useLoading } from '../helpers/loadingContext';
+import { getApiUrl, getImageUrl } from '../utils/apiConfig';
 
 const VerifyProfile = () => {
     const { setIsLoading } = useLoading();
@@ -30,7 +30,7 @@ const VerifyProfile = () => {
             setIsLoading(true);
             try {
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-                const response = await fetch(`http://localhost:5000/api/profile/${userInfo._id}`);
+                const response = await fetch(getApiUrl(`/api/profile/${userInfo._id}`));
                 const data = await response.json();
                 setPassportPhoto(data.passportPhoto || '');
                 setVideo(data.video || '');
@@ -50,7 +50,7 @@ const VerifyProfile = () => {
         const formData = new FormData();
         formData.append('file', file);
 
-        const response = await fetch('http://localhost:5000/api/upload', {
+        const response = await fetch(getApiUrl('/api/upload'), {
             method: 'POST',
             body: formData
         });
@@ -65,7 +65,7 @@ const VerifyProfile = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:5000/api/profile', {
+            const response = await fetch(getApiUrl('/api/profile'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -109,13 +109,13 @@ const VerifyProfile = () => {
                         onClick={handleBackToProfile}
                         aria-label="Back to Profile" />
                     <Heading as="h2" size="xl" textAlign="center">
-                        Profilinizi təsdiqləyin
+                        Verify Your Profile
                     </Heading>
                 </HStack>
                 <form onSubmit={submitHandler}>
                     <VStack spacing={4}>
                         <FormControl id="video">
-                            <FormLabel>Video halında təqdimatınız</FormLabel>
+                            <FormLabel fontWeight="600">Video Introduction</FormLabel>
                             <Input
                                 type="file"
                                 display="none"
@@ -129,12 +129,12 @@ const VerifyProfile = () => {
                                     variant="outline"
                                     isDisabled={isVerificated === '2'}
                                     cursor="pointer">
-                                    Videonu seçin
+                                    Select Video
                                 </Button>
                                 {video && (
                                     <video
                                         mt={2}
-                                        src={`http://localhost:5000${video}`}
+                                        src={getImageUrl(video)}
                                         alt="video Preview"
                                         width="300px"
                                         controls
@@ -146,7 +146,7 @@ const VerifyProfile = () => {
                             </HStack>
                         </FormControl>
                         <FormControl id="passportPhoto">
-                            <FormLabel>Şəxsiyyət vəsiqəsi şəkli</FormLabel>
+                            <FormLabel fontWeight="600">ID Document Photo</FormLabel>
                             <Input
                                 type="file"
                                 display="none"
@@ -160,12 +160,12 @@ const VerifyProfile = () => {
                                     variant="outline"
                                     isDisabled={isVerificated === '2'}
                                     cursor="pointer">
-                                    Şəkil seçin
+                                    Select Photo
                                 </Button>
                                 {passportPhoto && (
                                     <Image
                                         mt={2}
-                                        src={`http://localhost:5000${passportPhoto}`}
+                                        src={getImageUrl(passportPhoto)}
                                         alt="passportPhoto Preview"
                                         boxSize="100px"
                                         width="300px"
@@ -183,7 +183,7 @@ const VerifyProfile = () => {
                             width="full"
                             mt={6}>
                                 
-                            {isVerificated === '2' ? 'Sizin aktiv müraciətiniz var' : 'Məlumatları yeniləyin'}
+                            {isVerificated === '2' ? 'Verification Request Pending' : 'Submit for Verification'}
                         </Button>
 
                     </VStack>

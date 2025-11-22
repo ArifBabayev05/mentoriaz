@@ -2,6 +2,7 @@ import React, { useEffect, useState  } from 'react';
 import { Box, Heading, Text, Button, HStack, Image, Flex, Badge, Wrap, WrapItem } from '@chakra-ui/react';
 import {Link} from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
+import { getApiUrl, getImageUrl } from '../utils/apiConfig';
 
 
 const filters = ['UI/UX', 'Design', 'Marketing', 'Product', 'Java', 'Mobile', 'C++', 'Data Science', 'Python', 'C++', 'Data Science', 'Python'];
@@ -31,7 +32,7 @@ const MentorCard = ({ mentor }) => {
       cursor="pointer"  // Make the card appear clickable
     >
       <Image
-        src={mentor.photo ? `http://localhost:5000${mentor.photo}` : `https://cdn-icons-png.freepik.com/512/147/147142.png`}
+        src={mentor.photo ? getImageUrl(mentor.photo) : `https://cdn-icons-png.freepik.com/512/147/147142.png`}
         alt={mentor.user.name}
         borderRadius="full"
         mb={4}
@@ -67,9 +68,14 @@ const FindMentorSection = () => {
 
   useEffect(() => {
     const fetchMentors = async () => {
-      const response = await fetch('http://localhost:5000/api/mentors/all');
-      const data = await response.json();
-      setMentors(data);
+      try {
+        const response = await fetch(getApiUrl('/api/mentors/all'));
+        if (!response.ok) throw new Error('Failed to fetch mentors');
+        const data = await response.json();
+        setMentors(data);
+      } catch (error) {
+        console.error('Error fetching mentors:', error);
+      }
     };
 
     fetchMentors();
@@ -99,9 +105,9 @@ const FindMentorSection = () => {
 
   return (
     <Box mt={20} textAlign="center" width={{ base: '90%', md: '70%', lg: '70%' }} mx="auto">
-      <Text fontSize="lg" color="gray.600">Mentorlarımız</Text>
-      <Heading as="h2" size="xl" mt={4} mb={6} fontWeight="bold">
-        Sahənə uyğun mentoru seç
+      <Text fontSize="lg" color="gray.600" fontWeight="600" letterSpacing="0.1em" textTransform="uppercase">Our Mentors</Text>
+      <Heading as="h2" size="xl" mt={4} mb={6} fontWeight="700">
+        Choose a mentor that fits your field
       </Heading>
 
       <Box 
@@ -142,7 +148,7 @@ const FindMentorSection = () => {
         onClick={toggleFilterVisibility}
         mb={10}
       >
-        {showAllFilters ? 'Daha az' : `+${hiddenFilters.length} daha çox seçim`}
+        {showAllFilters ? 'Show Less' : `+${hiddenFilters.length} More Options`}
       </Button>
 
       <Flex justifyContent="center" alignItems="center" flexWrap="wrap">
@@ -152,7 +158,7 @@ const FindMentorSection = () => {
       </Flex>
 
       <Button colorScheme="blue" size="lg" mt={10}>
-        Mentorunu tap →
+        Find Your Mentor →
       </Button>
     </Box>
   );

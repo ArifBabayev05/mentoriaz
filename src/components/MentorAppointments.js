@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Button, TabPanel, Text, useToast, Heading, Image, Flex, Select, Checkbox,SimpleGrid } from '@chakra-ui/react';
 import images from '../helpers/imageLoader';
+import axiosInstance from '../axios.config';
+import { getApiUrl } from '../utils/apiConfig';
 
 const MentorAppointments = ({ mentorId }) => {
   const [appointments, setAppointments] = useState([]);
@@ -14,7 +16,7 @@ const MentorAppointments = ({ mentorId }) => {
   useEffect(() => {
     const fetchAppointmentsAndMentor = async () => {
       try {
-        const appointmentsResponse = await axios.get(`http://localhost:5000/api/appointments/${mentorId}`);
+        const appointmentsResponse = await axiosInstance.get(`/api/appointments/${mentorId}`);
         const appointmentsData = appointmentsResponse.data;
 
         if (Array.isArray(appointmentsData)) {
@@ -23,15 +25,22 @@ const MentorAppointments = ({ mentorId }) => {
           setAppointments([appointmentsData]);
         }
 
-        const mentorResponse = await axios.get(`http://localhost:5000/api/mentors/${mentorId}`);
+        const mentorResponse = await axiosInstance.get(`/api/mentors/${mentorId}`);
         setMentor(mentorResponse.data);
       } catch (error) {
         console.error("Error fetching appointments or mentor data:", error);
+        toast({
+          title: 'Xəta',
+          description: 'Məlumatlar yüklənə bilmədi',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
       }
     };
 
     fetchAppointmentsAndMentor();
-  }, [mentorId]);
+  }, [mentorId, toast]);
 
   const findPackageNameById = (packageId) => {
     if (mentor && mentor.cards) {
@@ -52,7 +61,7 @@ const MentorAppointments = ({ mentorId }) => {
         const startDate = new Date().toISOString();
         const endDate = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-        const meetingResponse = await fetch('http://localhost:5000/create-meeting', {
+        const meetingResponse = await fetch(getApiUrl('/create-meeting'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -80,7 +89,7 @@ const MentorAppointments = ({ mentorId }) => {
         }
       }
 
-      const response = await axios.put(`http://localhost:5000/api/appointments/update/${appointmentId}`, {
+      const response = await axiosInstance.put(`/api/appointments/update/${appointmentId}`, {
         isAccepted: newStatus,
         meetingURL: meetingData ? meetingData.roomUrl : null,
         meetingID: meetingData ? meetingData.meetingId : null,
@@ -146,15 +155,15 @@ const MentorAppointments = ({ mentorId }) => {
             isChecked={showPast} 
             onChange={() => setShowPast(!showPast)} 
           >
-            Keçmiş görüşləri də göstər
+            Show past appointments
           </Checkbox>
         </Flex>
   
         {/* Show message if no appointments match the filter */}
         {filteredAppointments.length === 0 ? (
           <>
-            <Heading textAlign="center" size="lg">
-              Axtardığınız tipdə istək hələki mövcud deyildir
+            <Heading textAlign="center" size="lg" fontWeight="700">
+              No appointments found
             </Heading>
             <Box
               mx="auto"

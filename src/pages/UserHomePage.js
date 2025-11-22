@@ -37,6 +37,8 @@ import {
 } from 'react-icons/fa';
 import axios from "axios";
 import { useLoading } from '../helpers/loadingContext';
+import axiosInstance from '../axios.config';
+import { getApiUrl, getImageUrl } from '../utils/apiConfig';
 
 const MentorCard = ({ mentor }) => {
     const [reviewsCount, setReviewsCount] = useState(0);
@@ -44,7 +46,7 @@ const MentorCard = ({ mentor }) => {
     useEffect(() => {
         const fetchReviews = async () => {
           try {
-            const response = await axios.get(`http://localhost:5000/api/reviews/${mentor.user._id}`);
+            const response = await axiosInstance.get(`/api/reviews/${mentor.user._id}`);
             const reviews = response.data;
             const count = reviews.filter(review => review.mentor === mentor.user._id).length;
             setReviewsCount(count);
@@ -58,30 +60,64 @@ const MentorCard = ({ mentor }) => {
 
     return (
         <RouterLink to={"/profile/" + mentor.user._id}>
-            <Box bg="white" p={4} rounded="md" shadow="sm" textAlign="center">
-                <Avatar src={`http://localhost:5000${mentor.photo}`} alt={mentor.name} size="xl" mb={4} />
-                <Heading as="h3" size="md" mb={2}>
+            <Box 
+                bg="white" 
+                p={6} 
+                borderRadius="2xl" 
+                shadow="sm" 
+                border="1px solid"
+                borderColor="gray.200"
+                textAlign="center"
+                transition="all 0.3s"
+                _hover={{ 
+                    shadow: "xl", 
+                    transform: "translateY(-8px)",
+                    borderColor: "brand.200"
+                }}
+                cursor="pointer"
+                h="full">
+                <Avatar 
+                    src={getImageUrl(mentor.photo)} 
+                    alt={mentor.name} 
+                    size="xl" 
+                    mb={4}
+                    border="3px solid"
+                    borderColor="brand.100"
+                />
+                <Heading as="h3" size="md" mb={2} fontWeight="700">
                     {mentor.user.name}
-
-                    <Badge colorScheme="gray">
-                    {mentor.specialty}
-                    </Badge>
-
                 </Heading>
-                <HStack spacing={2} mb={2} justifyContent="center">
-                    {mentor.skills?.map((skill) => (
-                        <Badge key={skill} colorScheme="blue">
+                <Badge 
+                    colorScheme="gray" 
+                    mb={3}
+                    px={3}
+                    py={1}
+                    borderRadius="full"
+                    fontSize="xs"
+                    fontWeight="600">
+                    {mentor.specialty}
+                </Badge>
+                <HStack spacing={2} mb={3} justifyContent="center" flexWrap="wrap">
+                    {mentor.skills?.slice(0, 3).map((skill) => (
+                        <Badge 
+                            key={skill} 
+                            colorScheme="blue"
+                            px={2}
+                            py={1}
+                            borderRadius="full"
+                            fontSize="xs"
+                            fontWeight="500">
                             {skill}
                         </Badge>
                     ))}
                 </HStack>
-                <Text fontSize="sm" color="gray.600">
-                    ⭐ 0 sessions ({reviewsCount} reviews)
+                <Text fontSize="sm" color="gray.600" fontWeight="500">
+                    ⭐ {reviewsCount} reviews
                 </Text>
                 {mentor.newMentor && (
-                    <Text fontSize="sm" mt={2} color="gray.600">
-                        ⭐ New mentor
-                    </Text>
+                    <Badge colorScheme="green" mt={2} borderRadius="full" px={2} py={1}>
+                        New Mentor
+                    </Badge>
                 )}
             </Box>
         </RouterLink>
@@ -98,7 +134,9 @@ const Sidebar = () => {
             try {
                 setIsLoading(true);
                 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-                const response = await fetch(`http://localhost:5000/api/profile/${userInfo._id}`);
+                if (!userInfo || !userInfo._id) return;
+                const response = await fetch(getApiUrl(`/api/profile/${userInfo._id}`));
+                if (!response.ok) throw new Error('Failed to fetch profile');
                 const data = await response.json();
                 setProfile(data);
             } catch (error) {
@@ -115,7 +153,7 @@ const Sidebar = () => {
         <VStack align="start" spacing={4} p={4} rounded="md" w="full">
             <HStack spacing={4}>
                 <Avatar
-                    src={profile?.photo ? `http://localhost:5000${profile.photo}` : `https://cdn-icons-png.freepik.com/512/147/147142.png`}
+                    src={profile?.photo ? getImageUrl(profile.photo) : `https://cdn-icons-png.freepik.com/512/147/147142.png`}
                     name="pp"
                     size="md"
                 />
@@ -160,14 +198,40 @@ const Sidebar = () => {
 
 
 const InfoCard = ({title, description, progress}) => (
-    <Box p={4} rounded="md" shadow="sm" bg="white" w="full">
-        <HStack justify="space-between">
-            <VStack align="start">
-                <Heading as="h4" size="md">{title}</Heading>
-                <Text color="gray.500">{description}</Text>
-            </VStack>
-            {progress && <Progress value={progress} size="sm" colorScheme="blue" w="100px"/>}
-        </HStack>
+    <Box 
+        p={6} 
+        borderRadius="xl" 
+        shadow="sm" 
+        bg="white" 
+        w="full"
+        border="1px solid"
+        borderColor="gray.200"
+        transition="all 0.3s"
+        _hover={{
+            shadow: "lg",
+            transform: "translateY(-4px)",
+            borderColor: "brand.200"
+        }}>
+        <VStack align="start" spacing={3}>
+            <Heading as="h4" size="md" fontWeight="700">{title}</Heading>
+            <Text color="gray.600" lineHeight="1.6">{description}</Text>
+            {progress && (
+                <Box w="full">
+                    <HStack justify="space-between" mb={2}>
+                        <Text fontSize="sm" color="gray.600" fontWeight="600">Progress</Text>
+                        <Text fontSize="sm" color="brand.600" fontWeight="700">{progress}%</Text>
+                    </HStack>
+                    <Progress 
+                        value={progress} 
+                        size="lg" 
+                        colorScheme="blue" 
+                        w="full"
+                        borderRadius="full"
+                        bg="gray.100"
+                    />
+                </Box>
+            )}
+        </VStack>
     </Box>
 );
 
@@ -184,7 +248,8 @@ const UserHomePage = () => {
         const fetchMentors = async () => {
             try {
                 setIsLoading(true); // Start loading
-                const response = await fetch('http://localhost:5000/api/mentors/all');
+                const response = await fetch(getApiUrl('/api/mentors/all'));
+                if (!response.ok) throw new Error('Failed to fetch mentors');
                 const data = await response.json();
                 setMentors(data);
             } catch (error) {
@@ -210,20 +275,47 @@ const UserHomePage = () => {
                     )}
                     <GridItem colSpan={showDesktopContent ? 13 : 24}>
                         <VStack spacing={8}>
-                            <Box shadow="sm" bg="white" p={4} rounded="md" w="full">
-                                <Heading as="h3" size="lg">
-                                    Fill out a form to get a list of mentors
+                            <Box 
+                                shadow="lg" 
+                                bg="white" 
+                                p={8} 
+                                borderRadius="2xl" 
+                                w="full"
+                                border="1px solid"
+                                borderColor="gray.200"
+                                bgGradient="linear(to-br, white, brand.50)">
+                                <Heading as="h3" size="lg" mb={2} fontWeight="700">
+                                    Find Your Perfect Mentor
                                 </Heading>
-                                <Button onClick={handleEditProfile} colorScheme="blue" mt={4}>
-                                    Get new matches
+                                <Text color="gray.600" mb={6} lineHeight="1.6">
+                                    Complete your profile to get personalized mentor recommendations
+                                </Text>
+                                <Button 
+                                    onClick={handleEditProfile} 
+                                    colorScheme="blue" 
+                                    size="lg"
+                                    borderRadius="xl"
+                                    fontWeight="600"
+                                    px={8}
+                                    _hover={{ transform: 'translateY(-2px)', boxShadow: 'lg' }}
+                                    transition="all 0.2s">
+                                    Get Matched
                                 </Button>
                             </Box>
 
-                            <VStack align="start" spacing={4} w="full">
-                                <Heading as="h3" size="lg">
-                                    Recommended mentors
-                                </Heading>
-                                <Grid templateColumns="repeat(3, 1fr)" gap={4} w="full">
+                            <VStack align="start" spacing={6} w="full">
+                                <Box>
+                                    <Heading as="h3" size="lg" mb={2} fontWeight="700">
+                                        Recommended Mentors
+                                    </Heading>
+                                    <Text color="gray.600">
+                                        Handpicked mentors based on your profile and goals
+                                    </Text>
+                                </Box>
+                                <Grid 
+                                    templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }} 
+                                    gap={6} 
+                                    w="full">
                                     {mentors.map((mentor) => (
                                         <GridItem key={mentor._id}>
                                             <MentorCard mentor={mentor} />

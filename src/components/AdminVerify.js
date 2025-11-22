@@ -13,6 +13,7 @@ import {
   Image,
   video,
 } from '@chakra-ui/react';
+import { getApiUrl, getImageUrl } from '../utils/apiConfig';
 
 const AdminVerify = () => {
   const [profiles, setProfiles] = useState([]);
@@ -20,7 +21,7 @@ const AdminVerify = () => {
 
   useEffect(() => {
     const fetchProfiles = async () => {
-      const response = await fetch('http://localhost:5000/api/admin/profiles');
+      const response = await fetch(getApiUrl('/api/admin/profiles'));
       const data = await response.json();
       // Filter profiles where isVerificated value is '2'
       setProfiles(data.filter(profile => profile.isVerificated === '2'));
@@ -30,7 +31,7 @@ const AdminVerify = () => {
   }, []);
 
   const handleUpdateVerification = async (id, newStatus) => {
-    const response = await fetch(`http://localhost:5000/api/admin/profiles/${id}`, {
+    const response = await fetch(getApiUrl(`/api/admin/profiles/${id}`), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isVerificated: newStatus }),
@@ -63,7 +64,7 @@ const AdminVerify = () => {
               <Td>
                 {profile.passportPhoto && (
                   <Image
-                    src={`http://localhost:5000${profile.passportPhoto}`}
+                    src={getImageUrl(profile.passportPhoto)}
                     alt="Passport Photo"
                     boxSize="100px"
                     objectFit="cover"
@@ -73,7 +74,7 @@ const AdminVerify = () => {
               <Td>
                 {profile.video && (
                   <video
-                    src={`http://localhost:5000${profile.video}`}
+                    src={getImageUrl(profile.video)}
                     width="150"
                     controls
                   />
